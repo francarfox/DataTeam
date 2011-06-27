@@ -16,6 +16,7 @@ using namespace std;
 class NaiveBayesClassifier {
 
 	int totalTestRecords;
+	int currentProcessRecords;
 	vector<string> testFieldNames;
 	vector<string> irrelevantFieldNames;
 	vector<string> fieldNamesWithoutIrrelevant;

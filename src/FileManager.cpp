@@ -180,7 +180,11 @@ void FileManager::writeDataRecord(vector<string> dataRecord, ofstream &outFile) 
 	string line;
 
 	for(size_t i=0; i < dataRecord.size(); i++) {
-		line += dataRecord[i] + ",";
+		line += dataRecord[i];
+
+		if (i < dataRecord.size()-1) {
+			line += ",";
+		}
 	}
 
 	line += "\n";

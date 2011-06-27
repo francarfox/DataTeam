@@ -33,6 +33,7 @@ public:
 
 	int getDayOfWeek(string dataString);
 	int getPdDistrict(string dataString);
+	string getPdDistrictName(int pdDistrictIndex);
 
 private:
 	void orderCategories();

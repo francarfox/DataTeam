@@ -31,9 +31,6 @@ void NaiveBayes::train(int totalRecords, string fileName) {
 		// Extraemos la media y la varianza de los datos
 		doGaussianDistribution(trainFile);
 
-		// Debug
-		debug();
-
 		trainFile.close();
 	} else {
 		cout << "Error when open trainFile!" << endl;
@@ -41,7 +38,7 @@ void NaiveBayes::train(int totalRecords, string fileName) {
 }
 
 void NaiveBayes::debug() {
-	cout << "\nmeanDistribution" << endl;
+	cout << "\nmeanDistribution -> Hour DayOfWeek PdDistrict X Y" << endl;
 	for(size_t i=0; i < meanDistribution.size(); i++) {
 		string category = setterData.getCategoryName(i);
 		cout << "i=" << i << " " << category << " ";
@@ -52,7 +49,7 @@ void NaiveBayes::debug() {
 		cout << endl;
 	}
 
-	cout << "\nvarianceDistribution" << endl;
+	cout << "\nvarianceDistribution -> Hour DayOfWeek PdDistrict X Y" << endl;
 	for(size_t i=0; i < varianceDistribution.size(); i++) {
 		string category = setterData.getCategoryName(i);
 		cout << "i=" << i << " " << category << " ";
@@ -83,6 +80,9 @@ void NaiveBayes::doGaussianDistribution(ifstream &trainFile) {
 	// Ignoro la primera linea de nombre de campos
 	ignoreFieldNamesFromFirstLine(trainFile);
 	processCalculateVariance(trainFile);
+
+	// Debug
+	debug();
 
 	// Elimino el category de los nombres de los campos para que concuerde con las matrices
 	fieldNames.erase(fieldNames.begin() + getPredictFieldIndex());
@@ -130,6 +130,11 @@ void NaiveBayes::processCalculateMean(ifstream &trainFile) {
 		while (trainFile.good() && currentChar != '\n') {
 			currentChar = (char)trainFile.get();
 
+			// Contemplo el ultimo campo que no termina en ,
+			if (currentChar == '\n') {
+				processDataString(dataRecord, dataString, currentFieldIndex++, currentCategoryName);
+			}
+
 			if (currentChar == ',') {
 				// Proceso los datos actuales
 				processDataString(dataRecord, dataString, currentFieldIndex++, currentCategoryName);
@@ -162,6 +167,11 @@ void NaiveBayes::processCalculateVariance(ifstream &trainFile) {
 		// Proceso por cada registro
 		while (trainFile.good() && currentChar != '\n') {
 			currentChar = (char)trainFile.get();
+
+			// Contemplo el ultimo campo que no termina en ,
+			if (currentChar == '\n') {
+				processDataString(dataRecord, dataString, currentFieldIndex++, currentCategoryName);
+			}
 
 			if (currentChar == ',') {
 				// Proceso los datos actuales
