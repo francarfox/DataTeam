@@ -3,13 +3,33 @@
 // Author      : Fran
 // Version     :
 // Copyright   : Your copyright notice
-// Description : Hello World in C++, Ansi-style
+// Description :
 //============================================================================
 
 #include <iostream>
+#include <stdio.h>
 using namespace std;
 
+//	Debe eliminar descripcion y resolucion
+void deleteIrrelevantFields(string inString, string outString){
+	FILE *fileIn = fopen(inString.c_str(), "r");
+	FILE *fileOut = fopen(outString.c_str(), "w");
+
+	while(!feof(fileIn)){
+//		current = fgetc(fileIn);
+//		fputc(current, fileOut);
+	}
+
+	fclose(fileIn);
+	fclose(fileOut);
+}
+
 int main() {
-	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
+	cout << "!!!DataTeam project start!!!" << endl;
+
+//	Eliminando campos irrelevantes de set de entrenamiento
+	string trainFile = string("../files/train.csv");
+	deleteIrrelevantFields(trainFile, "../files/trainWithoutIrrelevantFields.csv");
+
 	return 0;
 }
