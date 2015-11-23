@@ -4,16 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/DataTeam.cpp \
-../src/FileManager.cpp 
+../src/FileManager.cpp \
+../src/Main.cpp 
 
 OBJS += \
-./src/DataTeam.o \
-./src/FileManager.o 
+./src/FileManager.o \
+./src/Main.o 
 
 CPP_DEPS += \
-./src/DataTeam.d \
-./src/FileManager.d 
+./src/FileManager.d \
+./src/Main.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

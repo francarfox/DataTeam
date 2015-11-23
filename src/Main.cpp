@@ -23,5 +23,6 @@ int main() {
 	//	Eliminando campos irrelevantes de set de entrenamiento
 	fileManager.deleteIrrelevantFields(trainFileName, trainCleanFileName);
 
+	cout << "Finish run app" << endl;
 	return 0;
 }

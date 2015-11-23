@@ -9,6 +9,7 @@
 #define FILEMANAGER_H_
 
 #include <iostream>
+#include <vector>
 using namespace std;
 
 class FileManager {
@@ -18,6 +19,11 @@ public:
 
 	//	Debe eliminar Descript, Resolution, Address
 	void deleteIrrelevantFields(string inString, string outString);
+	void cleanRegister(string registerLine);
+
+private:
+	vector<string> irrelevantFieldNames;
+	vector<string> fieldNames;
 };
 
 #endif /* FILEMANAGER_H_ */
