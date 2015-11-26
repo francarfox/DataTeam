@@ -31,6 +31,13 @@ void FileManager::deleteIrrelevantFields(string inFileName, string outFileName) 
 
 		bool readingFieldNames = true;
 		string currentWord;
+		int currentIrrelevantPOsition = 0;
+
+//		getFieldNamesFromFirstLine(inFile, outFile);
+
+		while (inFile.good()) {
+
+		}
 
 		while (inFile.good()) {
 			char currentChar = (char)inFile.get();
@@ -45,6 +52,11 @@ void FileManager::deleteIrrelevantFields(string inFileName, string outFileName) 
 			if (readingFieldNames) {
 				if (currentChar == ',') {
 					// Guardo los nombres de los campos en la primera linea leida
+
+//					if (currentWord == ) {
+//
+//					}
+
 					fieldNames.push_back(currentWord);
 				} else {
 					currentWord += currentChar;

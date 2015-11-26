@@ -5,15 +5,18 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../src/FileManager.cpp \
-../src/Main.cpp 
+../src/Main.cpp \
+../src/NaiveBayes.cpp 
 
 OBJS += \
 ./src/FileManager.o \
-./src/Main.o 
+./src/Main.o \
+./src/NaiveBayes.o 
 
 CPP_DEPS += \
 ./src/FileManager.d \
-./src/Main.d 
+./src/Main.d \
+./src/NaiveBayes.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

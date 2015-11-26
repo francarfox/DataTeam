@@ -24,6 +24,7 @@ public:
 private:
 	vector<string> irrelevantFieldNames;
 	vector<string> fieldNames;
+	vector<int> irrelevantPositions;
 };
 
 #endif /* FILEMANAGER_H_ */
