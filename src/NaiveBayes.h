@@ -15,7 +15,7 @@ using namespace std;
 
 class NaiveBayes {
 
-	ifstream trainFile;
+	ifstream* trainFile;
 	string trainFileName;
 	string predictFieldName;
 	vector<string> categoryNames;
@@ -24,13 +24,21 @@ class NaiveBayes {
 	vector<int> totalCategoryRecords;	// total de registros por categoria para el calculo de la media
 
 public:
-	NaiveBayes(string trainFileName, string predictFieldName);
+	NaiveBayes(string, string);
 	virtual ~NaiveBayes();
 	void train();
 
 private:
 	void getFieldNamesFromFirstLine();
 	void doGaussianDistribution();
+	void processCalculateMean();
+	void processCalculateVariance();
+	string getCategoryName(string dataString, int currentFieldIndex);
+	int getPredictFieldIndex();
+	void addForCalculateMean(vector<string> dataRecord, string categoryName);
+	void addForCalculateVariance(vector<string> dataRecord, string categoryName);
+	void calculateMean();
+	void calculateVariance();
 };
 
 #endif /* NAIVEBAYES_H_ */
