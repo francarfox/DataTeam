@@ -8,18 +8,22 @@
 #include "FileManager.h"
 #include <fstream>
 
-FileManager::FileManager() {
-	irrelevantFieldNames.push_back("Descript");
-	irrelevantFieldNames.push_back("Resolution");
-	irrelevantFieldNames.push_back("Address");
+FileManager::FileManager(string inFileName, string outFileName) {
+	this->inFile->open(inFileName.c_str(), ios::in);
+	this->outFile->open(outFileName.c_str(), ios::out);
+
+	this->irrelevantFieldNames.push_back("Year");
+	this->irrelevantFieldNames.push_back("Month");
+	this->irrelevantFieldNames.push_back("Day");
+	this->irrelevantFieldNames.push_back("Descript");
+	this->irrelevantFieldNames.push_back("Resolution");
+	this->irrelevantFieldNames.push_back("Address");
 }
 
-FileManager::~FileManager() {
-	// TODO Auto-generated destructor stub
-}
+FileManager::~FileManager() { }
 
 //	Debe eliminar Descript, Resolution, Address
-void FileManager::deleteIrrelevantFields(string inFileName, string outFileName) {
+void FileManager::process() {
 //	Year,Month,Day,Hour,Category,Descript,DayOfWeek,PdDistrict,Resolution,Address,X,Y
 
 	ifstream inFile(inFileName.c_str(), ios::in);

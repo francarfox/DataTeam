@@ -12,14 +12,18 @@
 
 using namespace std;
 
-NaiveBayes::NaiveBayes(string trainFileName, string predictFieldName) {
-	this->trainFileName = trainFileName;
-	this->predictFieldName = predictFieldName;
+NaiveBayes::NaiveBayes(string trainFileName, string testFileName, string predictFieldName) {
 //	this->trainFile(trainFileName.c_str(), ios::in);
 	this->trainFile->open(trainFileName.c_str(), ios::in);
+	this->testFile->open(testFileName.c_str(), ios::in);
+
+	this->predictFieldName = predictFieldName;
 }
 
-NaiveBayes::~NaiveBayes() { }
+NaiveBayes::~NaiveBayes() {
+	this->trainFile = NULL;
+	this->testFile = NULL;
+}
 
 void NaiveBayes::train() {
 	if (trainFile->is_open()) {
@@ -31,7 +35,19 @@ void NaiveBayes::train() {
 
 		trainFile->close();
 	} else {
-		cout << "Error when open file " + trainFileName << endl;
+		cout << "Error when open trainFile!" << endl;
+	}
+}
+
+void NaiveBayes::classification() {
+	if (testFile->is_open()) {
+		cout << "Prediciendo con clasificador NaiveBayes..." << endl;
+
+		// Calculos de clasificacion
+
+		testFile->close();
+	} else {
+		cout << "Error when open testFile!" << endl;
 	}
 }
 

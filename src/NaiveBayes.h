@@ -16,7 +16,7 @@ using namespace std;
 class NaiveBayes {
 
 	ifstream* trainFile;
-	string trainFileName;
+	ifstream* testFile;
 	string predictFieldName;
 	vector<string> categoryNames;
 	vector<string> fieldNames;
@@ -24,9 +24,10 @@ class NaiveBayes {
 	vector<int> totalCategoryRecords;	// total de registros por categoria para el calculo de la media
 
 public:
-	NaiveBayes(string, string);
+	NaiveBayes(string trainFileName, string testFileName, string predictFieldName);
 	virtual ~NaiveBayes();
 	void train();
+	void classification();
 
 private:
 	void getFieldNamesFromFirstLine();

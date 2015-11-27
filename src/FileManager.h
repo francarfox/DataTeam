@@ -13,18 +13,20 @@
 using namespace std;
 
 class FileManager {
-public:
-	FileManager();
-	virtual ~FileManager();
 
-	//	Debe eliminar Descript, Resolution, Address
-	void deleteIrrelevantFields(string inString, string outString);
-	void cleanRegister(string registerLine);
-
-private:
+	ifstream *inFile;
+	ofstream *outFile;
 	vector<string> irrelevantFieldNames;
 	vector<string> fieldNames;
 	vector<int> irrelevantPositions;
+
+public:
+	FileManager(string inFileName, string outFileName);
+	virtual ~FileManager();
+	void process();
+
+private:
+	void cleanRegister(string registerLine);
 };
 
 #endif /* FILEMANAGER_H_ */

@@ -17,17 +17,16 @@ int main() {
 
 	string trainFileName = string("../DataTeam/files/train.csv");
 	string testFileName = string("../DataTeam/files/test.csv");
-	string trainCleanFileName = string("../DataTeam/files/trainClean.csv");
+	string trainNewFileName = string("../DataTeam/files/trainNew.csv");
 
 	//	Preparar el archivo para que funcione al pasarlo al NaiveBayes
-	FileManager fileManager = FileManager();
-	//	Eliminando campos irrelevantes de set de entrenamiento
-	fileManager.deleteIrrelevantFields(trainFileName, trainCleanFileName);
+	FileManager fileManager = FileManager(trainFileName, trainNewFileName);
+	fileManager.process();
 
 	//	Pasarle el archivo con los datos de los registros como numericos
-	NaiveBayes naiveBayes = NaiveBayes(trainCleanFileName, "Category");
+	NaiveBayes naiveBayes = NaiveBayes(trainNewFileName, testFileName, "Category");
 	naiveBayes.train();
-
+	naiveBayes.classification();
 
 	cout << "Finish run app" << endl;
 	return 0;
