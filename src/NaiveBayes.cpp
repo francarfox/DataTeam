@@ -28,6 +28,7 @@ NaiveBayes::~NaiveBayes() {
 void NaiveBayes::train() {
 	if (trainFile->is_open()) {
 		cout << "Entrenando NaiveBayes..." << endl;
+
 		// Obtengo nombre de los campos con la primera linea leida del trainFile
 		getFieldNamesFromFirstLine();
 		// Extraemos la media y la varianza de los datos
@@ -152,7 +153,7 @@ string NaiveBayes::getCategoryName(string dataString, int currentFieldIndex) {
 
 int NaiveBayes::getPredictFieldIndex() {
 
-	for(int i=0; i < fieldNames.size(); i++) {
+	for(size_t i=0; i < fieldNames.size(); i++) {
 		if (fieldNames[i] == predictFieldName) {
 			return i;
 		}
@@ -164,7 +165,7 @@ int NaiveBayes::getPredictFieldIndex() {
 void NaiveBayes::addForCalculateMean(vector<string> dataRecord, string categoryName) {
 	int category = (int)categoryName.c_str();	// Previamente trainFile con datos numericos
 
-	for(int i=0; i < dataRecord.size(); i++) {
+	for(size_t i=0; i < dataRecord.size(); i++) {
 		double data = atof(dataRecord[i].c_str());
 
 		// sumo datos para el posterior calculo de la media
@@ -179,7 +180,7 @@ void NaiveBayes::addForCalculateMean(vector<string> dataRecord, string categoryN
 void NaiveBayes::addForCalculateVariance(vector<string> dataRecord, string categoryName) {
 	int category = (int)categoryName.c_str();	// Previamente trainFile con datos numericos
 
-	for(int i=0; i < dataRecord.size(); i++) {
+	for(size_t i=0; i < dataRecord.size(); i++) {
 		double data = atof(dataRecord[i].c_str());
 
 		// sumo datos para el posterior calculo de la varianza
@@ -193,7 +194,7 @@ void NaiveBayes::addForCalculateVariance(vector<string> dataRecord, string categ
 
 void NaiveBayes::calculateMean() {
 
-	for(int i=0; i < gaussianDistribution.size(); i++) {
+	for(size_t i=0; i < gaussianDistribution.size(); i++) {
 		vector<double> dataCategory = gaussianDistribution[i];
 		int totalCategory = totalCategoryRecords[i];
 
@@ -203,9 +204,9 @@ void NaiveBayes::calculateMean() {
 
 void NaiveBayes::calculateVariance() {
 
-	for(int i=0; i < gaussianDistribution.size(); i++) {
+	for(size_t i=0; i < gaussianDistribution.size(); i++) {
 		vector<double> dataCategory = gaussianDistribution[i];
-		double mean = dataCategory[i*2];
+		double mean = (double)dataCategory[i*2];
 		int totalCategory = totalCategoryRecords[i];
 
 		// Aplico formula de la varianza

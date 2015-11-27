@@ -20,90 +20,74 @@ FileManager::FileManager(string inFileName, string outFileName) {
 	this->irrelevantFieldNames.push_back("Address");
 }
 
-FileManager::~FileManager() { }
+FileManager::~FileManager() {
+	this->inFile = NULL;
+	this->outFile = NULL;
+}
 
-//	Debe eliminar Descript, Resolution, Address
 void FileManager::process() {
-//	Year,Month,Day,Hour,Category,Descript,DayOfWeek,PdDistrict,Resolution,Address,X,Y
+	if (inFile->is_open() && outFile->is_open()) {
+		cout << "Procesando archivo de entrenamiento para limpieza..." << endl;
 
-	ifstream inFile(inFileName.c_str(), ios::in);
-	ofstream outFile(outFileName.c_str(), ios::out);
+		// Obtengo nombre de los campos con la primera linea leida de inFile
+		getFieldNamesFromFirstLine();
+		// Generamos el nuevo archivo con los campos numericos
+		generateOutFile();
 
-	if (inFile.is_open() && outFile.is_open()) {
-		cout << inFileName << " is opened!" << endl;
-		cout << outFileName << " is opened!" << endl;
-
-		bool readingFieldNames = true;
-		string currentWord;
-		int currentIrrelevantPOsition = 0;
-
-//		getFieldNamesFromFirstLine(inFile, outFile);
-
-		while (inFile.good()) {
-
-		}
-
-		while (inFile.good()) {
-			char currentChar = (char)inFile.get();
-
-			if (currentChar == '\n') {
-				readingFieldNames = false;
-				outFile << "Prueba\n";
-
-				// paso a leer el proximo registro
-			}
-
-			if (readingFieldNames) {
-				if (currentChar == ',') {
-					// Guardo los nombres de los campos en la primera linea leida
-
-//					if (currentWord == ) {
-//
-//					}
-
-					fieldNames.push_back(currentWord);
-				} else {
-					currentWord += currentChar;
-				}
-			}
-
-//			cout << (char) inFile.get() << endl;
-
-//			cleanRegister(inFile.get());
-		}
-
-		inFile.close();
-		outFile.close();
+		inFile->close();
+		outFile->close();
 	} else {
 		cout << "Error when open files " << endl;
 	}
 }
 
-void FileManager::cleanRegister(string registerLine) {
+void FileManager::getFieldNamesFromFirstLine() {
+	cout << "Obteniendo nombre de los campos..." << endl;
 
-	//Leo la primera linea que no me sirve (nombre de campos)
-//		getline(infile, line);
-//
-//		//Guardo la palabra anterior
-//		string pal_ant = "";
-//		string pal_ant_ant = "";
-//		string ngrams;
-//		//Itero linea a linea, eliminando el id y puntaje de cada una
-//		while(getline(infile, line)) {
-//			istringstream iss(line);
-//			iss >> word;
-//			iss >> word;
-//			while(iss >> word) {
-//				if (!(mapStopw.count(word))){
-//					mymap[word] += 1;
-//				}
-//				if (bool_ngrams){
-//					//hago 2 grams
-//					ngrams = pal_ant + " " + word;
-//					if (!(mapStopw.count(ngrams))){
-//						mymap[ngrams] += 1;
-//					}
-//				}
-//			}
-//		}
+	string fieldName;
+	char currentChar;
+
+	while (inFile->good() && currentChar != '\n') {
+		currentChar = (char)inFile->get();
+
+		if (currentChar == ',') {
+			fieldNames.push_back(fieldName);
+			fieldName = "";
+		} else {
+			fieldName += currentChar;
+		}
+	}
+}
+
+//	Year,Month,Day,Hour,Category,Descript,DayOfWeek,PdDistrict,Resolution,Address,X,Y
+void FileManager::generateOutFile() {
+	cout << "Generando nuevo archivo de entrenamiento..." << endl;
+
+	while (inFile->good()) {
+		vector<string> dataRecord;	// cache de los datos del registro a leer
+		string currentCategoryName;	// nombre de la categoria del registro a leer
+		string dataString = "";
+		char currentChar;
+//		int currentFieldIndex = 0;
+
+		// Proceso por cada registro
+		while (currentChar != '\n') {
+			currentChar = (char)inFile->get();
+
+			if (currentChar == ',') {
+				// Obtengo el nombre de la categoria del registro
+//				currentCategoryName = getCategoryName(dataString, currentFieldIndex++);
+				// Guardo en cache los datos del registro
+				dataRecord.push_back(dataString.c_str());
+				dataString = "";
+			} else {
+				dataString += currentChar;
+			}
+		}
+
+		outFile->write("Prueba\n", 6);
+		// paso a leer el proximo registro
+		// sumo datos para el posterior calculo de la media sabiedo la categoria del registro
+//		addForCalculateMean(dataRecord, currentCategoryName);
+	}
 }

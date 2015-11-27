@@ -26,7 +26,8 @@ public:
 	void process();
 
 private:
-	void cleanRegister(string registerLine);
+	void getFieldNamesFromFirstLine();
+	void generateOutFile();
 };
 
 #endif /* FILEMANAGER_H_ */
