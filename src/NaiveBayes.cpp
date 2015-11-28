@@ -9,88 +9,93 @@
 #include "math.h"
 #include <iostream>
 #include <stdlib.h>
+#include "ConsoleLog.h"
 
 using namespace std;
 
-NaiveBayes::NaiveBayes(string trainFileName, string testFileName, string predictFieldName) {
-//	this->trainFile(trainFileName.c_str(), ios::in);
-	this->trainFile->open(trainFileName.c_str(), ios::in);
-	this->testFile->open(testFileName.c_str(), ios::in);
-
+NaiveBayes::NaiveBayes(string predictFieldName) {
 	this->predictFieldName = predictFieldName;
 }
 
-NaiveBayes::~NaiveBayes() {
-	this->trainFile = NULL;
-	this->testFile = NULL;
-}
+NaiveBayes::~NaiveBayes() { }
 
-void NaiveBayes::train() {
-	if (trainFile->is_open()) {
+void NaiveBayes::train(int totalRecords, string fileName) {
+	this->totalTrainRecords = totalRecords;
+	ifstream trainFile(fileName.c_str(), ios::in);
+
+	if (trainFile.is_open()) {
 		cout << "Entrenando NaiveBayes..." << endl;
 
 		// Obtengo nombre de los campos con la primera linea leida del trainFile
-		getFieldNamesFromFirstLine();
+		getFieldNamesFromFirstLine(trainFile);
 		// Extraemos la media y la varianza de los datos
-		doGaussianDistribution();
+		doGaussianDistribution(trainFile);
 
-		trainFile->close();
+		trainFile.close();
 	} else {
 		cout << "Error when open trainFile!" << endl;
 	}
 }
 
-void NaiveBayes::classification() {
-	if (testFile->is_open()) {
+void NaiveBayes::test(int totalRecords, string fileName) {
+	this->totalTestRecords = totalRecords;
+	ifstream testFile(fileName.c_str(), ios::in);
+
+	if (testFile.is_open()) {
 		cout << "Prediciendo con clasificador NaiveBayes..." << endl;
 
 		// Calculos de clasificacion
 
-		testFile->close();
+		testFile.close();
 	} else {
 		cout << "Error when open testFile!" << endl;
 	}
 }
 
-void NaiveBayes::getFieldNamesFromFirstLine() {
+void NaiveBayes::getFieldNamesFromFirstLine(ifstream &trainFile) {
 	cout << "Obteniendo nombre de los campos..." << endl;
 
 	string fieldName;
 	char currentChar;
 
-	while (trainFile->good() && currentChar != '\n') {
-		currentChar = (char)trainFile->get();
+	while (trainFile.good() && currentChar != '\n') {
+		currentChar = (char)trainFile.get();
 
 		if (currentChar == ',') {
+			cout << fieldName.c_str() << " ";
 			fieldNames.push_back(fieldName);
 			fieldName = "";
 		} else {
 			fieldName += currentChar;
 		}
 	}
+
+	cout << endl;
 }
 
 //Year,Month,Day,Hour,Category,Descript,DayOfWeek,PdDistrict,Resolution,Address,X,Y
-void NaiveBayes::doGaussianDistribution() {
+void NaiveBayes::doGaussianDistribution(ifstream &trainFile) {
 	cout << "Haciendo la distribucion Gaussiana..." << endl;
 
-	processCalculateMean();
-	processCalculateVariance();
+	processCalculateMean(trainFile);
+	processCalculateVariance(trainFile);
 }
 
-void NaiveBayes::processCalculateMean() {
+void NaiveBayes::processCalculateMean(ifstream &trainFile) {
 	cout << "Calculando medias..." << endl;
 
-	while (trainFile->good()) {
+	int currentProcessRecords = 0;
+
+	while (trainFile.good()) {
 		vector<string> dataRecord;	// cache de los datos del registro a leer
 		string currentCategoryName;	// nombre de la categoria del registro a leer
 		string dataString = "";
-		char currentChar;
+		char currentChar = '0';
 		int currentFieldIndex = 0;
 
 		// Proceso por cada registro
-		while (trainFile->good() && currentChar != '\n') {
-			currentChar = (char)trainFile->get();
+		while (trainFile.good() && currentChar != '\n') {
+			currentChar = (char)trainFile.get();
 
 			if (currentChar == ',') {
 				// Obtengo el nombre de la categoria del registro
@@ -105,24 +110,27 @@ void NaiveBayes::processCalculateMean() {
 
 		// sumo datos para el posterior calculo de la media sabiedo la categoria del registro
 		addForCalculateMean(dataRecord, currentCategoryName);
+		logPercent(++currentProcessRecords, totalTrainRecords);
 	}
 
 	calculateMean();
 }
 
-void NaiveBayes::processCalculateVariance() {
+void NaiveBayes::processCalculateVariance(ifstream &trainFile) {
 	cout << "Calculando varianzas..." << endl;
 
-	while (trainFile->good()) {
+	int currentProcessRecords = 0;
+
+	while (trainFile.good()) {
 		vector<string> dataRecord;	// cache de los datos del registro a leer
 		string currentCategoryName;	// nombre de la categoria del registro a leer
 		string dataString = "";
-		char currentChar;
+		char currentChar = '0';
 		int currentFieldIndex = 0;
 
 		// Proceso por cada registro
-		while (currentChar != '\n') {
-			currentChar = (char)trainFile->get();
+		while (trainFile.good() && currentChar != '\n') {
+			currentChar = (char)trainFile.get();
 
 			if (currentChar == ',') {
 				// Obtengo el nombre de la categoria del registro
@@ -137,6 +145,7 @@ void NaiveBayes::processCalculateVariance() {
 
 		// sumo datos para el posterior calculo de la varianza sabiedo la categoria del registro
 		addForCalculateVariance(dataRecord, currentCategoryName);
+		logPercent(++currentProcessRecords, totalTrainRecords);
 	}
 
 	calculateVariance();

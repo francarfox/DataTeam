@@ -81,7 +81,7 @@ void FileManager::getFieldNamesFromFirstLine(ifstream &inFile, ofstream &outFile
 void FileManager::generateOutFile(ifstream &inFile, ofstream &outFile) {
 	cout << "Generando nuevo archivo de entrenamiento..." << endl;
 
-	int currentWriteRecords = 0;
+	int currentProcessRecords = 0;
 
 	while (inFile.good()) {
 		vector<string> dataRecord;	// cache de los datos del registro a escribir
@@ -119,7 +119,7 @@ void FileManager::generateOutFile(ifstream &inFile, ofstream &outFile) {
 		}
 
 		writeDataRecord(dataRecord, outFile);
-		logPercent(++currentWriteRecords, totalRecords);
+		logPercent(++currentProcessRecords, totalRecords);
 	}
 }
 

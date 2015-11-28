@@ -16,18 +16,19 @@ int main() {
 	cout << "!!!DataTeam project start!!!" << endl;
 
 	int totalTrainRecords = 100000;
+	string predictFieldName = "Category";
 	string trainFileName = string("../DataTeam/files/train.csv");
-//	string testFileName = string("../DataTeam/files/test.csv");
+	string testFileName = string("../DataTeam/files/test.csv");
 	string trainNewFileName = string("../DataTeam/files/trainNew.csv");
 
 	//	Preparar el archivo para que funcione al pasarlo al NaiveBayes
-	FileManager fileManager = FileManager(totalTrainRecords, trainFileName, trainNewFileName);
-	fileManager.process();
+//	FileManager fileManager = FileManager(totalTrainRecords, trainFileName, trainNewFileName);
+//	fileManager.process();
 
 	//	Pasarle el archivo con los datos de los registros como numericos
-//	NaiveBayes naiveBayes = NaiveBayes(trainNewFileName, testFileName, "Category");
-//	naiveBayes.train();
-//	naiveBayes.classification();
+	NaiveBayes naiveBayes = NaiveBayes(predictFieldName);
+	naiveBayes.train(totalTrainRecords, trainNewFileName);
+//	naiveBayes.test(totalTestRecords, testFileName);
 
 	cout << "Finish run app" << endl;
 	return 0;

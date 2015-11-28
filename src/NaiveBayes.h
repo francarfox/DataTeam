@@ -11,12 +11,13 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include "SetterData.h"
 using namespace std;
 
 class NaiveBayes {
 
-	ifstream* trainFile;
-	ifstream* testFile;
+	int totalTrainRecords;
+	int totalTestRecords;
 	string predictFieldName;
 	vector<string> categoryNames;
 	vector<string> fieldNames;
@@ -24,16 +25,16 @@ class NaiveBayes {
 	vector<int> totalCategoryRecords;	// total de registros por categoria para el calculo de la media
 
 public:
-	NaiveBayes(string trainFileName, string testFileName, string predictFieldName);
+	NaiveBayes(string predictFieldName);
 	virtual ~NaiveBayes();
-	void train();
-	void classification();
+	void train(int totalRecords, string fileName);
+	void test(int totalRecords, string fileName);
 
 private:
-	void getFieldNamesFromFirstLine();
-	void doGaussianDistribution();
-	void processCalculateMean();
-	void processCalculateVariance();
+	void getFieldNamesFromFirstLine(ifstream &trainFile);
+	void doGaussianDistribution(ifstream &trainFile);
+	void processCalculateMean(ifstream &trainFile);
+	void processCalculateVariance(ifstream &trainFile);
 	string getCategoryName(string dataString, int currentFieldIndex);
 	int getPredictFieldIndex();
 	void addForCalculateMean(vector<string> dataRecord, string categoryName);
