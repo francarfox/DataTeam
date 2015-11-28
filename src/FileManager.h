@@ -10,25 +10,30 @@
 
 #include <iostream>
 #include <vector>
+#include "SetterData.h"
 using namespace std;
 
 class FileManager {
 
-	int totalTrainRecords;
+	int totalRecords;
 	string inFileName;
 	string outFileName;
-	vector<string> irrelevantFieldNames;
 	vector<string> fieldNames;
-	vector<int> irrelevantPositions;
+	vector<string> irrelevantFieldNames;
+	vector<string> numericFieldNames;
+	SetterData setterData;
 
 public:
-	FileManager(int totalTrainRecords, string inFileName, string outFileName);
+	FileManager(int totalRecords, string inFileName, string outFileName);
 	virtual ~FileManager();
 	void process();
 
 private:
-	void getFieldNamesFromFirstLine(ifstream &inFile);
+	void getFieldNamesFromFirstLine(ifstream &inFile, ofstream &outFile);
 	void generateOutFile(ifstream &inFile, ofstream &outFile);
+	void toDataNumeric(vector<string> &dataRecord, string dataString, int currentFieldIndex);
+	void writeFieldNames(ofstream &outFile);
+	void writeDataRecord(vector<string> dataRecord, ofstream &outFile);
 };
 
 #endif /* FILEMANAGER_H_ */
