@@ -89,7 +89,7 @@ void NaiveBayes::processCalculateMean() {
 		int currentFieldIndex = 0;
 
 		// Proceso por cada registro
-		while (currentChar != '\n') {
+		while (trainFile->good() && currentChar != '\n') {
 			currentChar = (char)trainFile->get();
 
 			if (currentChar == ',') {

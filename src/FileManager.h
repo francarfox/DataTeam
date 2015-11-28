@@ -14,20 +14,21 @@ using namespace std;
 
 class FileManager {
 
-	ifstream *inFile;
-	ofstream *outFile;
+	int totalTrainRecords;
+	string inFileName;
+	string outFileName;
 	vector<string> irrelevantFieldNames;
 	vector<string> fieldNames;
 	vector<int> irrelevantPositions;
 
 public:
-	FileManager(string inFileName, string outFileName);
+	FileManager(int totalTrainRecords, string inFileName, string outFileName);
 	virtual ~FileManager();
 	void process();
 
 private:
-	void getFieldNamesFromFirstLine();
-	void generateOutFile();
+	void getFieldNamesFromFirstLine(ifstream &inFile);
+	void generateOutFile(ifstream &inFile, ofstream &outFile);
 };
 
 #endif /* FILEMANAGER_H_ */
