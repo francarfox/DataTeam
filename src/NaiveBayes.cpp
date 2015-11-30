@@ -6,6 +6,7 @@
  */
 
 #include "NaiveBayes.h"
+#include "NaiveBayesClassifier.h"
 #include "math.h"
 #include "ConsoleLog.h"
 
@@ -19,6 +20,7 @@ NaiveBayes::NaiveBayes(string predictFieldName, SetterData setterData) {
 
 NaiveBayes::~NaiveBayes() { }
 
+//Year,Month,Day,Hour,Category,Descript,DayOfWeek,PdDistrict,Resolution,Address,X,Y
 void NaiveBayes::train(int totalRecords, string fileName) {
 	this->totalTrainRecords = totalRecords;
 	ifstream trainFile(fileName.c_str(), ios::in);
@@ -26,8 +28,6 @@ void NaiveBayes::train(int totalRecords, string fileName) {
 	if (trainFile.is_open()) {
 		cout << "Entrenando NaiveBayes..." << endl;
 
-		// Obtengo nombre de los campos con la primera linea leida del trainFile
-		getFieldNamesFromFirstLine(trainFile);
 		// Extraemos la media y la varianza de los datos
 		doGaussianDistribution(trainFile);
 
@@ -38,21 +38,30 @@ void NaiveBayes::train(int totalRecords, string fileName) {
 }
 
 void NaiveBayes::test(int totalRecords, string fileName) {
-	this->totalTestRecords = totalRecords;
-	ifstream testFile(fileName.c_str(), ios::in);
-
-	if (testFile.is_open()) {
-		cout << "Prediciendo con clasificador NaiveBayes..." << endl;
-
-		// Calculos de clasificacion
-
-		testFile.close();
-	} else {
-		cout << "Error when open testFile!" << endl;
-	}
+	NaiveBayesClassifier classifier = NaiveBayesClassifier(this);
+	classifier.test(totalRecords, fileName);
 }
 
-void NaiveBayes::getFieldNamesFromFirstLine(ifstream &trainFile) {
+void NaiveBayes::doGaussianDistribution(ifstream &trainFile) {
+	cout << "Haciendo la distribucion Gaussiana..." << endl;
+
+	// Obtengo nombre de los campos con la primera linea leida del trainFile
+	getFieldNamesFromFirstLine(trainFile, fieldNames);
+	processCalculateMean(trainFile);
+
+	// Vuelvo al inicio del archivo
+	trainFile.clear();
+	trainFile.seekg(0, ios::beg);
+
+	// Ignoro la primera linea de nombre de campos
+	ignoreFieldNamesFromFirstLine(trainFile);
+	processCalculateVariance(trainFile);
+
+	// Elimino el category de los nombres de los campos para que concuerde con las matrices
+	fieldNames.erase(fieldNames.begin() + getPredictFieldIndex());
+}
+
+void NaiveBayes::getFieldNamesFromFirstLine(ifstream &trainFile, vector<string> &fieldNames) {
 	cout << "Obteniendo nombre de los campos..." << endl;
 
 	string fieldName;
@@ -62,23 +71,20 @@ void NaiveBayes::getFieldNamesFromFirstLine(ifstream &trainFile) {
 		currentChar = (char)trainFile.get();
 
 		if (currentChar == ',') {
-			cout << fieldName.c_str() << " ";
 			fieldNames.push_back(fieldName);
 			fieldName = "";
 		} else {
 			fieldName += currentChar;
 		}
 	}
-
-	cout << endl;
 }
 
-//Year,Month,Day,Hour,Category,Descript,DayOfWeek,PdDistrict,Resolution,Address,X,Y
-void NaiveBayes::doGaussianDistribution(ifstream &trainFile) {
-	cout << "Haciendo la distribucion Gaussiana..." << endl;
+void NaiveBayes::ignoreFieldNamesFromFirstLine(ifstream &trainFile) {
+	char currentChar;
 
-	processCalculateMean(trainFile);
-	processCalculateVariance(trainFile);
+	while (trainFile.good() && currentChar != '\n') {
+		currentChar = (char)trainFile.get();
+	}
 }
 
 void NaiveBayes::processCalculateMean(ifstream &trainFile) {
@@ -98,10 +104,8 @@ void NaiveBayes::processCalculateMean(ifstream &trainFile) {
 			currentChar = (char)trainFile.get();
 
 			if (currentChar == ',') {
-				// Obtengo el nombre de la categoria del registro
-				getCategoryName(dataString, currentFieldIndex++, currentCategoryName);
-				// Guardo en cache los datos del registro
-				dataRecord.push_back(dataString.c_str());
+				// Proceso los datos actuales
+				processDataString(dataRecord, dataString, currentFieldIndex++, currentCategoryName);
 				dataString = "";
 			} else {
 				dataString += currentChar;
@@ -133,10 +137,8 @@ void NaiveBayes::processCalculateVariance(ifstream &trainFile) {
 			currentChar = (char)trainFile.get();
 
 			if (currentChar == ',') {
-				// Obtengo el nombre de la categoria del registro
-				getCategoryName(dataString, currentFieldIndex++, currentCategoryName);
-				// Guardo en cache los datos del registro
-				dataRecord.push_back(dataString.c_str());
+				// Proceso los datos actuales
+				processDataString(dataRecord, dataString, currentFieldIndex++, currentCategoryName);
 				dataString = "";
 			} else {
 				dataString += currentChar;
@@ -151,10 +153,12 @@ void NaiveBayes::processCalculateVariance(ifstream &trainFile) {
 	calculateVariance();
 }
 
-void NaiveBayes::getCategoryName(string dataString, int currentFieldIndex, string &currentCategoryName) {
+void NaiveBayes::processDataString(vector<string> &dataRecord, string dataString, int currentFieldIndex, string &currentCategoryName) {
 
 	if (currentFieldIndex == getPredictFieldIndex()) {
 		currentCategoryName = dataString;
+	} else {
+		dataRecord.push_back(dataString.c_str());
 	}
 }
 
@@ -178,12 +182,13 @@ void NaiveBayes::addForCalculateMean(vector<string> dataRecord, string categoryN
 		// sumo datos para el posterior calculo de la media
 		verifyDataCategory(category);
 		meanDistribution[category][i] += data;
-		totalCategoryRecords[category]++;
 	}
+
+	totalCategoryRecords[category]++;
 }
 
 void NaiveBayes::addForCalculateVariance(vector<string> dataRecord, string categoryName) {
-	int category = (int)categoryName.c_str();	// Previamente trainFile con datos numericos
+	int category = setterData.getInt(categoryName);	// Previamente trainFile con datos numericos
 
 	for(size_t i=0; i < dataRecord.size(); i++) {
 		double data = setterData.getDouble(dataRecord[i]);
@@ -225,7 +230,7 @@ void NaiveBayes::calculateVariance() {
 void NaiveBayes::verifyDataCategory(int category) {
 
 	if (category > (int)meanDistribution.size()-1) {
-		// not found
+		// Agregar las categorias necesarias para que sea valido
 		for (int i = meanDistribution.size(); i <= category; i++) {
 			meanDistribution.push_back(getNewVector());
 			varianceDistribution.push_back(getNewVector());

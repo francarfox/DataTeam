@@ -15,8 +15,4 @@ void log(string text) {
 void logPercent(string processName, int current, int total) {
 	float percent = 100 * current / total;
 	cout << "\r" << processName << ": " << percent << "%   ";
-
-	if (current >= total) {
-		cout << endl;
-	}
 }

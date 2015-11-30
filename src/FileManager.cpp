@@ -64,12 +64,10 @@ void FileManager::getFieldNamesFromFirstLine(ifstream &inFile, ofstream &outFile
 
 		// Contemplo el ultimo campo que no termina en ,
 		if (currentChar == '\r') {
-			cout << fieldName.c_str() << " ";
 			fieldNames.push_back(fieldName);
 		}
 
 		if (currentChar == ',') {
-			cout << fieldName.c_str() << " ";
 			fieldNames.push_back(fieldName);
 			fieldName = "";
 		} else {
@@ -77,7 +75,6 @@ void FileManager::getFieldNamesFromFirstLine(ifstream &inFile, ofstream &outFile
 		}
 	}
 
-	cout << endl;
 	writeFieldNames(outFile);
 }
 

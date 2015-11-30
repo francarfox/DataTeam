@@ -17,6 +17,7 @@ int main() {
 
 //	int totalTrainRecords = 878049;
 	int totalTrainRecords = 100000;
+	int totalTestRecords = 884261;
 	string predictFieldName = "Category";
 	string trainFileName = string("../DataTeam/files/train.csv");
 	string testFileName = string("../DataTeam/files/test.csv");
@@ -29,7 +30,7 @@ int main() {
 	//	Pasarle el archivo con los datos de los registros como numericos
 	NaiveBayes naiveBayes = NaiveBayes(predictFieldName, fileManager.getSetterData());
 	naiveBayes.train(totalTrainRecords, trainNewFileName);
-//	naiveBayes.test(totalTestRecords, testFileName);
+	naiveBayes.test(totalTestRecords, testFileName);
 
 	cout << "Finish run app" << endl;
 	return 0;

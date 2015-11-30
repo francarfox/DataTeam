@@ -16,28 +16,28 @@ using namespace std;
 
 class NaiveBayes {
 
-	int totalTrainRecords;
-	int totalTestRecords;
 	string predictFieldName;
-	vector<string> categoryNames;
 	vector<string> fieldNames;
-	vector< vector<double> > meanDistribution;	// media de cada campo x categorias
-	vector< vector<double> > varianceDistribution;	// varianza de cada campo x categorias
-	vector<int> totalCategoryRecords;	// total de registros por categoria para el calculo de la media
 	SetterData setterData;
 
 public:
+	int totalTrainRecords;
+	vector<int> totalCategoryRecords;	// total de registros por categoria para el calculo de la media
+	vector< vector<double> > meanDistribution;	// media de cada campo x categorias
+	vector< vector<double> > varianceDistribution;	// varianza de cada campo x categorias
+
 	NaiveBayes(string predictFieldName, SetterData setterData);
 	virtual ~NaiveBayes();
 	void train(int totalRecords, string fileName);
 	void test(int totalRecords, string fileName);
+	void getFieldNamesFromFirstLine(ifstream &trainFile, vector<string> &fieldNames);
 
 private:
-	void getFieldNamesFromFirstLine(ifstream &trainFile);
 	void doGaussianDistribution(ifstream &trainFile);
+	void ignoreFieldNamesFromFirstLine(ifstream &trainFile);
 	void processCalculateMean(ifstream &trainFile);
 	void processCalculateVariance(ifstream &trainFile);
-	void getCategoryName(string dataString, int currentFieldIndex, string &currentCategoryName);
+	void processDataString(vector<string> &dataRecord, string dataString, int currentFieldIndex, string &currentCategoryName);
 	int getPredictFieldIndex();
 	void addForCalculateMean(vector<string> dataRecord, string categoryName);
 	void addForCalculateVariance(vector<string> dataRecord, string categoryName);
