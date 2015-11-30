@@ -21,11 +21,13 @@ class NaiveBayes {
 	string predictFieldName;
 	vector<string> categoryNames;
 	vector<string> fieldNames;
-	vector<vector<double> > gaussianDistribution;	// media y varianza de cada campo x categorias
+	vector< vector<double> > meanDistribution;	// media de cada campo x categorias
+	vector< vector<double> > varianceDistribution;	// varianza de cada campo x categorias
 	vector<int> totalCategoryRecords;	// total de registros por categoria para el calculo de la media
+	SetterData setterData;
 
 public:
-	NaiveBayes(string predictFieldName);
+	NaiveBayes(string predictFieldName, SetterData setterData);
 	virtual ~NaiveBayes();
 	void train(int totalRecords, string fileName);
 	void test(int totalRecords, string fileName);
@@ -35,12 +37,14 @@ private:
 	void doGaussianDistribution(ifstream &trainFile);
 	void processCalculateMean(ifstream &trainFile);
 	void processCalculateVariance(ifstream &trainFile);
-	string getCategoryName(string dataString, int currentFieldIndex);
+	void getCategoryName(string dataString, int currentFieldIndex, string &currentCategoryName);
 	int getPredictFieldIndex();
 	void addForCalculateMean(vector<string> dataRecord, string categoryName);
 	void addForCalculateVariance(vector<string> dataRecord, string categoryName);
 	void calculateMean();
 	void calculateVariance();
+	void verifyDataCategory(int category);
+	vector<double> getNewVector();
 };
 
 #endif /* NAIVEBAYES_H_ */

@@ -49,6 +49,10 @@ void FileManager::process() {
 	}
 }
 
+SetterData FileManager::getSetterData() {
+	return this->setterData;
+}
+
 void FileManager::getFieldNamesFromFirstLine(ifstream &inFile, ofstream &outFile) {
 	cout << "Obteniendo nombre de los campos..." << endl;
 
@@ -101,17 +105,17 @@ void FileManager::generateOutFile(ifstream &inFile, ofstream &outFile) {
 
 			// Contemplo el ultimo campo que no termina en ,
 			if (currentChar == '\r') {
-				toDataNumeric(dataRecord, dataString, currentFieldIndex++);
+				addDataNumeric(dataRecord, dataString, currentFieldIndex++);
 			}
 
 			if (currentChar == ',' && readingPhrase == false) {
-				// Paso a dato numerico
-				toDataNumeric(dataRecord, dataString, currentFieldIndex++);
+				// Agrego dato numerico
+				addDataNumeric(dataRecord, dataString, currentFieldIndex++);
 				dataString = "";
 			} else {
 				// Fin de archivo
 				if (currentChar == '\377') {
-					toDataNumeric(dataRecord, dataString, currentFieldIndex++);
+					addDataNumeric(dataRecord, dataString, currentFieldIndex++);
 				} else {
 					dataString += currentChar;
 				}
@@ -119,33 +123,36 @@ void FileManager::generateOutFile(ifstream &inFile, ofstream &outFile) {
 		}
 
 		writeDataRecord(dataRecord, outFile);
-		logPercent(++currentProcessRecords, totalRecords);
+		logPercent("Generating outFile", ++currentProcessRecords, totalRecords);
 	}
 }
 
-void FileManager::toDataNumeric(vector<string> &dataRecord, string dataString, int currentFieldIndex) {
-	string currentField = fieldNames[currentFieldIndex];
+void FileManager::addDataNumeric(vector<string> &dataRecord, string dataString, int currentFieldIndex) {
+	string currentFieldName = fieldNames[currentFieldIndex];
 
+	// Me fijo si es un dato perteneciente a un campo irrelevante
 	for(size_t i=0; i < irrelevantFieldNames.size(); i++) {
 		string irrelevantField = irrelevantFieldNames[i];
 
-		if (currentField == irrelevantField) {
+		// Lo paso por alto
+		if (currentFieldName == irrelevantField) {
 			return;
 		}
 	}
 
+	// Me fijo si es un dato perteneciente a un campo numerico
 	for(size_t i=0; i < numericFieldNames.size(); i++) {
 		string numericField = numericFieldNames[i];
 
-		if (currentField == numericField) {
-			// Ya es un dato numerico
+		// Agrego dato que ya es numerico
+		if (currentFieldName == numericField) {
 			dataRecord.push_back(dataString.c_str());
 			return;
 		}
 	}
 
-	// Cambio a numerico
-	string dataNumeric = setterData.getDataNumeric(dataString, currentFieldIndex);
+	// Cambio a numerico mediante el setteador y luego agrego
+	string dataNumeric = setterData.getDataNumeric(dataString, currentFieldName);
 	dataRecord.push_back(dataNumeric.c_str());
 }
 

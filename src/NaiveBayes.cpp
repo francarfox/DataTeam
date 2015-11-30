@@ -7,14 +7,14 @@
 
 #include "NaiveBayes.h"
 #include "math.h"
-#include <iostream>
-#include <stdlib.h>
 #include "ConsoleLog.h"
 
 using namespace std;
 
-NaiveBayes::NaiveBayes(string predictFieldName) {
+NaiveBayes::NaiveBayes(string predictFieldName, SetterData setterData) {
 	this->predictFieldName = predictFieldName;
+
+	this->setterData = setterData;
 }
 
 NaiveBayes::~NaiveBayes() { }
@@ -99,7 +99,7 @@ void NaiveBayes::processCalculateMean(ifstream &trainFile) {
 
 			if (currentChar == ',') {
 				// Obtengo el nombre de la categoria del registro
-				currentCategoryName = getCategoryName(dataString, currentFieldIndex++);
+				getCategoryName(dataString, currentFieldIndex++, currentCategoryName);
 				// Guardo en cache los datos del registro
 				dataRecord.push_back(dataString.c_str());
 				dataString = "";
@@ -110,7 +110,7 @@ void NaiveBayes::processCalculateMean(ifstream &trainFile) {
 
 		// sumo datos para el posterior calculo de la media sabiedo la categoria del registro
 		addForCalculateMean(dataRecord, currentCategoryName);
-		logPercent(++currentProcessRecords, totalTrainRecords);
+		logPercent("Calculando medias", ++currentProcessRecords, totalTrainRecords);
 	}
 
 	calculateMean();
@@ -134,7 +134,7 @@ void NaiveBayes::processCalculateVariance(ifstream &trainFile) {
 
 			if (currentChar == ',') {
 				// Obtengo el nombre de la categoria del registro
-				currentCategoryName = getCategoryName(dataString, currentFieldIndex++);
+				getCategoryName(dataString, currentFieldIndex++, currentCategoryName);
 				// Guardo en cache los datos del registro
 				dataRecord.push_back(dataString.c_str());
 				dataString = "";
@@ -145,19 +145,17 @@ void NaiveBayes::processCalculateVariance(ifstream &trainFile) {
 
 		// sumo datos para el posterior calculo de la varianza sabiedo la categoria del registro
 		addForCalculateVariance(dataRecord, currentCategoryName);
-		logPercent(++currentProcessRecords, totalTrainRecords);
+		logPercent("Calculando varianzas", ++currentProcessRecords, totalTrainRecords);
 	}
 
 	calculateVariance();
 }
 
-string NaiveBayes::getCategoryName(string dataString, int currentFieldIndex) {
+void NaiveBayes::getCategoryName(string dataString, int currentFieldIndex, string &currentCategoryName) {
 
 	if (currentFieldIndex == getPredictFieldIndex()) {
-		return dataString;
+		currentCategoryName = dataString;
 	}
-
-	return "";
 }
 
 int NaiveBayes::getPredictFieldIndex() {
@@ -172,17 +170,15 @@ int NaiveBayes::getPredictFieldIndex() {
 }
 
 void NaiveBayes::addForCalculateMean(vector<string> dataRecord, string categoryName) {
-	int category = (int)categoryName.c_str();	// Previamente trainFile con datos numericos
+	int category = setterData.getInt(categoryName);	// Previamente trainFile con datos numericos
 
 	for(size_t i=0; i < dataRecord.size(); i++) {
-		double data = atof(dataRecord[i].c_str());
+		double data = setterData.getDouble(dataRecord[i]);
 
 		// sumo datos para el posterior calculo de la media
-		vector<double> dataCategory = gaussianDistribution[category];
-		int totalCategory = totalCategoryRecords[category];
-
-		dataCategory[i*2] += data;
-		totalCategory++;
+		verifyDataCategory(category);
+		meanDistribution[category][i] += data;
+		totalCategoryRecords[category]++;
 	}
 }
 
@@ -190,35 +186,60 @@ void NaiveBayes::addForCalculateVariance(vector<string> dataRecord, string categ
 	int category = (int)categoryName.c_str();	// Previamente trainFile con datos numericos
 
 	for(size_t i=0; i < dataRecord.size(); i++) {
-		double data = atof(dataRecord[i].c_str());
+		double data = setterData.getDouble(dataRecord[i]);
 
 		// sumo datos para el posterior calculo de la varianza
-		vector<double> dataCategory = gaussianDistribution[category];
-		double mean = dataCategory[i*2];
+		verifyDataCategory(category);
+		double mean = meanDistribution[category][i];
 		double variance = pow(mean - data, 2);
 
-		dataCategory[i*2+1] += variance;
+		varianceDistribution[category][i] += variance;
 	}
 }
 
 void NaiveBayes::calculateMean() {
 
-	for(size_t i=0; i < gaussianDistribution.size(); i++) {
-		vector<double> dataCategory = gaussianDistribution[i];
+	for(size_t i=0; i < meanDistribution.size(); i++) {
 		int totalCategory = totalCategoryRecords[i];
 
-		dataCategory[i*2] /= totalCategory;
+		for(size_t j=0; j < meanDistribution[i].size(); j++) {
+			meanDistribution[i][j] /= totalCategory;
+		}
 	}
 }
 
 void NaiveBayes::calculateVariance() {
 
-	for(size_t i=0; i < gaussianDistribution.size(); i++) {
-		vector<double> dataCategory = gaussianDistribution[i];
-		double mean = (double)dataCategory[i*2];
+	for(size_t i=0; i < varianceDistribution.size(); i++) {
 		int totalCategory = totalCategoryRecords[i];
 
-		// Aplico formula de la varianza
-		dataCategory[i*2+1] /= (totalCategory - 1);
+		for(size_t j=0; j < varianceDistribution[i].size(); j++) {
+	//		double mean = (double)dataCategory[i*2];
+
+			// Aplico formula de la varianza
+			varianceDistribution[i][j] /= (totalCategory - 1);
+		}
 	}
+}
+
+void NaiveBayes::verifyDataCategory(int category) {
+
+	if (category > (int)meanDistribution.size()-1) {
+		// not found
+		for (int i = meanDistribution.size(); i <= category; i++) {
+			meanDistribution.push_back(getNewVector());
+			varianceDistribution.push_back(getNewVector());
+			totalCategoryRecords.push_back(0);
+		}
+	}
+}
+
+vector<double> NaiveBayes::getNewVector() {
+	vector<double> vector;
+
+	for (size_t i=0; i < fieldNames.size(); i++) {
+		vector.push_back(0);
+	}
+
+	return vector;
 }

@@ -27,11 +27,12 @@ public:
 	FileManager(int totalRecords, string inFileName, string outFileName);
 	virtual ~FileManager();
 	void process();
+	SetterData getSetterData();
 
 private:
 	void getFieldNamesFromFirstLine(ifstream &inFile, ofstream &outFile);
 	void generateOutFile(ifstream &inFile, ofstream &outFile);
-	void toDataNumeric(vector<string> &dataRecord, string dataString, int currentFieldIndex);
+	void addDataNumeric(vector<string> &dataRecord, string dataString, int currentFieldIndex);
 	void writeFieldNames(ofstream &outFile);
 	void writeDataRecord(vector<string> dataRecord, ofstream &outFile);
 };

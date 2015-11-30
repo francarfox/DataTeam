@@ -16,6 +16,6 @@ struct ConsoleLog
 };
 
 void log(string text);
-void logPercent(int current, int total);
+void logPercent(string processName, int current, int total);
 
 #endif /* CONSOLELOG_H_ */

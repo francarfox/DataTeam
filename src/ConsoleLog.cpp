@@ -6,12 +6,17 @@
  */
 
 #include "ConsoleLog.h"
+#include <stdio.h>
 
 void log(string text) {
 
 }
 
-void logPercent(int current, int total) {
+void logPercent(string processName, int current, int total) {
 	float percent = 100 * current / total;
-	cout << "Procesando: " << percent << "%" << endl;
+	cout << "\r" << processName << ": " << percent << "%   ";
+
+	if (current >= total) {
+		cout << endl;
+	}
 }

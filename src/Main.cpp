@@ -15,6 +15,7 @@ using namespace std;
 int main() {
 	cout << "!!!DataTeam project start!!!" << endl;
 
+//	int totalTrainRecords = 878049;
 	int totalTrainRecords = 100000;
 	string predictFieldName = "Category";
 	string trainFileName = string("../DataTeam/files/train.csv");
@@ -22,11 +23,11 @@ int main() {
 	string trainNewFileName = string("../DataTeam/files/trainNew.csv");
 
 	//	Preparar el archivo para que funcione al pasarlo al NaiveBayes
-//	FileManager fileManager = FileManager(totalTrainRecords, trainFileName, trainNewFileName);
-//	fileManager.process();
+	FileManager fileManager = FileManager(totalTrainRecords, trainFileName, trainNewFileName);
+	fileManager.process();
 
 	//	Pasarle el archivo con los datos de los registros como numericos
-	NaiveBayes naiveBayes = NaiveBayes(predictFieldName);
+	NaiveBayes naiveBayes = NaiveBayes(predictFieldName, fileManager.getSetterData());
 	naiveBayes.train(totalTrainRecords, trainNewFileName);
 //	naiveBayes.test(totalTestRecords, testFileName);
 
