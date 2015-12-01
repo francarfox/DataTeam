@@ -9,47 +9,71 @@
 #define KNN_H_
 
 using namespace std;
+#include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <string>
 #include <vector>
+#include "SetterData.h"
+#include <iostream>
+#include <fstream>
+
+#define X_INVALID -120.5
+#define Y_INVALID 90.0
 
 class KNN {
+
+int k;
+SetterData setterData;
+string trainNorthernFN,trainParkFN,trainInglesideFN,trainBayviewFN,trainRichmondFN,trainCentralFN,trainTaravalFN,trainTenderloinFN,trainMissionFN,trainSouthernFN;
+typedef struct ptoDistrito {
+	int categoria;
+	float x;
+	float y;
+}pD;
+typedef struct distVecino {
+	float distancia;
+	int categoria;
+}dV;
+
 public:
-	KNN();
+	KNN(int valorK, SetterData setterData);
 	virtual ~KNN();
 
-	void KNN::aplicarKNN(int valorK/*, setTrain, setTest*/);
+	void aplicarKNN(string trainFileName, string testFileName);
 
 private:
-	int k;
-	typedef struct distVecino {
-		float distancia;
-		string categoria;
-	}dV;
 
-	void entrenar(/*setTrain*/);
-	//Ingresar Set de Entrenamiento (Agregar a declaracion)
+	void entrenar(string trainFileName);
+	//Ingresar Set de Entrenamiento
 	//Solo se necesita Categoria, Distrito PD, x, y
 	//Sino resuelto, elemina datos erroneos
 	//Separa por PdDistric
 
-	void evaluar(/*setTest */);
-	//Ingresar Set de Testeo (Agregar a declaracion) y valor de k a usar.
-	//Devuelve por cada instancia prbabilidades por categoria(?)(Agregar a declaracion)
+	vector<string> obtenerNombresDeCamposDePrimerLinea(fstream &train);
+
+	vector<string> obtenerDatosDeLinea(fstream &train);
+
+	void obtenerPosicionesDeCamposNecesarios
+		(vector<string> &nombresDeCampos, int &posCategoria, int &posDistrito, int &posX, int &posY);
+
+	void grabarTrainEnCorrespondiente(string pdDistrict,ptoDistrito instanciaTrain);
+
+	void evaluar(string testFileName);
+	//Ingresar Set de Testeo.
+	//Devuelve por cada instancia probabilidades por categoria(?)(Agregar a declaracion)
 	//Busca los k vecinos mas cercanos (distancia euclediana)
 	//y de ellos obtiene probabilidades de clasificar en cada categoria
 
-	vector<distVecino> buscarVecinos(/*instanciaTest*/);
+	vector<distVecino> buscarVecinos(float x, float y, string pdDistrict);
 
-	//formatoTrain obtenerTrainNecesario(string pdDistrict);
+	string obtenerDireccionTrain(string pdDistrict);
 
 	float calcularDistancia(float xtest, float xtrain, float ytest, float ytrain);
 
-	int buscarMayor(vector<distVecino> vecinos);
+	int buscarPosicionDelMayor(vector<distVecino> vecinos);
 
 	vector<int> contarCategoria(vector<distVecino> vecinos);
-
-	int obtenerNumCategoria(string categoria);
 
 };
 
