@@ -57,3 +57,8 @@ string SetterData::getCategoryName(int categoryIndex) {
 	cout << "dataConvert[Category][" << categoryIndex << "]=" << dataConvert["Category"][categoryIndex] << endl;
 	return dataConvert["Category"][categoryIndex];
 }
+
+string SetterData::getPdDistrictName(int pdDistrictIndex) {
+	cout << "dataConvert[PdDistrict][" << pdDistrictIndex << "]=" << dataConvert["PdDistrict"][pdDistrictIndex] << endl;
+	return dataConvert["PdDistrict"][pdDistrictIndex];
+}

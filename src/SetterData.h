@@ -27,6 +27,7 @@ public:
 	double getDouble(string numberString);
 
 	string getCategoryName(int categoryIndex);
+	string getPdDistrictName(int pdDistrictIndex);
 };
 
 #endif /* SETTERDATA_H_ */
