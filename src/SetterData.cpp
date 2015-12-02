@@ -8,6 +8,7 @@
 #include "SetterData.h"
 #include <sstream>
 #include <stdlib.h>
+#include <algorithm>
 
 SetterData::SetterData() {
 	map<int, string> map;
@@ -53,7 +54,47 @@ double SetterData::getDouble(string numberString) {
 	return atof(numberString.c_str());
 }
 
+vector<string> SetterData::getCategoryNames() {
+	orderCategories();
+	return categoryNames;
+}
+
 string SetterData::getCategoryName(int categoryIndex) {
-	cout << "dataConvert[Category][" << categoryIndex << "]=" << dataConvert["Category"][categoryIndex] << endl;
 	return dataConvert["Category"][categoryIndex];
+}
+
+int SetterData::getDayOfWeek(string dataString) {
+
+	for(size_t i=0; i < dataConvert["DayOfWeek"].size(); i++) {
+		string currentData = dataConvert["DayOfWeek"][i];
+
+		if (currentData == dataString) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+int SetterData::getPdDistrict(string dataString) {
+
+	for(size_t i=0; i < dataConvert["PdDistrict"].size(); i++) {
+		string currentData = dataConvert["PdDistrict"][i];
+
+		if (currentData == dataString) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+void SetterData::orderCategories() {
+
+	for(size_t i=0; i < dataConvert["Category"].size(); i++) {
+		string valueData = dataConvert["Category"][i];
+		categoryNames.push_back(valueData);
+	}
+
+	sort(categoryNames.begin(), categoryNames.begin()+categoryNames.size());
 }

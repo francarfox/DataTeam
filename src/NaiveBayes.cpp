@@ -31,22 +31,49 @@ void NaiveBayes::train(int totalRecords, string fileName) {
 		// Extraemos la media y la varianza de los datos
 		doGaussianDistribution(trainFile);
 
+		// Debug
+		debug();
+
 		trainFile.close();
 	} else {
 		cout << "Error when open trainFile!" << endl;
 	}
 }
 
-void NaiveBayes::test(int totalRecords, string fileName) {
+void NaiveBayes::debug() {
+	cout << "\nmeanDistribution" << endl;
+	for(size_t i=0; i < meanDistribution.size(); i++) {
+		string category = setterData.getCategoryName(i);
+		cout << "i=" << i << " " << category << " ";
+		for(size_t j=0; j < meanDistribution[i].size(); j++) {
+			cout << meanDistribution[i][j] << " ";
+		}
+
+		cout << endl;
+	}
+
+	cout << "\nvarianceDistribution" << endl;
+	for(size_t i=0; i < varianceDistribution.size(); i++) {
+		string category = setterData.getCategoryName(i);
+		cout << "i=" << i << " " << category << " ";
+		for(size_t j=0; j < varianceDistribution[i].size(); j++) {
+			cout << varianceDistribution[i][j] << " ";
+		}
+
+		cout << endl;
+	}
+}
+
+void NaiveBayes::test(int totalRecords, string testFileName, string submissionFileName) {
 	NaiveBayesClassifier classifier = NaiveBayesClassifier(this);
-	classifier.test(totalRecords, fileName);
+	classifier.test(totalRecords, testFileName, submissionFileName);
 }
 
 void NaiveBayes::doGaussianDistribution(ifstream &trainFile) {
 	cout << "Haciendo la distribucion Gaussiana..." << endl;
 
 	// Obtengo nombre de los campos con la primera linea leida del trainFile
-	getFieldNamesFromFirstLine(trainFile, fieldNames);
+	getFieldNamesFromFirstLine(trainFile);
 	processCalculateMean(trainFile);
 
 	// Vuelvo al inicio del archivo
@@ -61,7 +88,7 @@ void NaiveBayes::doGaussianDistribution(ifstream &trainFile) {
 	fieldNames.erase(fieldNames.begin() + getPredictFieldIndex());
 }
 
-void NaiveBayes::getFieldNamesFromFirstLine(ifstream &trainFile, vector<string> &fieldNames) {
+void NaiveBayes::getFieldNamesFromFirstLine(ifstream &trainFile) {
 	cout << "Obteniendo nombre de los campos..." << endl;
 
 	string fieldName;

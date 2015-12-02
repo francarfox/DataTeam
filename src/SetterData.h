@@ -17,6 +17,8 @@ class SetterData {
 
 	// Cumple la funcion de setteador de datos para Category, DayOfWeek, PdDistrict
 	map< string, map<int, string> > dataConvert;
+	vector<string> categoryNames;	// Ordenado para escribir archivo salida
+
 
 public:
 	SetterData();
@@ -26,7 +28,14 @@ public:
 	int getInt(string numberString);
 	double getDouble(string numberString);
 
+	vector<string> getCategoryNames();
 	string getCategoryName(int categoryIndex);
+
+	int getDayOfWeek(string dataString);
+	int getPdDistrict(string dataString);
+
+private:
+	void orderCategories();
 };
 
 #endif /* SETTERDATA_H_ */

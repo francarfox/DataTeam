@@ -6,7 +6,6 @@
  */
 
 #include "ConsoleLog.h"
-#include <stdio.h>
 
 void log(string text) {
 

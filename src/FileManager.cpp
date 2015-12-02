@@ -120,7 +120,7 @@ void FileManager::generateOutFile(ifstream &inFile, ofstream &outFile) {
 		}
 
 		writeDataRecord(dataRecord, outFile);
-		logPercent("Generating outFile", ++currentProcessRecords, totalRecords);
+		logPercent("Generating newTrainFile", ++currentProcessRecords, totalRecords);
 	}
 }
 
