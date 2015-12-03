@@ -18,13 +18,13 @@ class NaiveBayes {
 
 	string predictFieldName;
 	vector<string> fieldNames;
-	vector<string> irrelevantFieldNames;
 
 public:
 	int totalTrainRecords;
 	vector<int> totalCategoryRecords;	// total de registros por categoria para el calculo de la media
 	vector< vector<double> > meanDistribution;	// media de cada campo x categorias
 	vector< vector<double> > varianceDistribution;	// varianza de cada campo x categorias
+	vector<string> irrelevantFieldNames;
 	SetterData setterData;
 
 	NaiveBayes(string predictFieldName, SetterData setterData);
