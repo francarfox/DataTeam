@@ -10,6 +10,9 @@
 #include <stdlib.h>
 #include <iostream>
 
+#define X_INVALID -120.5
+#define Y_INVALID 90.0
+
 KNN::KNN(int valorK, SetterData setterDataTrain) {
 	k = valorK;
 	setterData = setterDataTrain;
@@ -61,13 +64,13 @@ void KNN::entrenar(string trainFileName) {
 
 	if (train.is_open()) {
 		//Recorre train y guarda campos en archivos binarios con registro ptoDistrito
-		vector<string> nombresDeCampos = obtenerCamposDeLinea(train);
+		vector<string> nombresDeCampos = obtenerCamposDeLineaTrain(train);
 		int posCategoria = obtenerPosicionDeCampo(nombresDeCampos,"Category");
 		int posPdDistrict = obtenerPosicionDeCampo(nombresDeCampos,"PdDistrict");
 		int posX = obtenerPosicionDeCampo(nombresDeCampos,"X");
 		int posY = obtenerPosicionDeCampo(nombresDeCampos,"Y");
 		while (train.good()) {
-			vector<string> datos = obtenerCamposDeLinea(train);
+			vector<string> datos = obtenerCamposDeLineaTrain(train);
 			ptoDistrito instanciaTrainDist;
 			instanciaTrainDist.x = strtof(datos[posX].c_str(),NULL);
 			instanciaTrainDist.y = strtof(datos[posY].c_str(),NULL);
@@ -84,18 +87,17 @@ void KNN::entrenar(string trainFileName) {
 	train.close();
 }
 
-vector<string> KNN::obtenerCamposDeLinea(fstream &file) {
+vector<string> KNN::obtenerCamposDeLineaTrain(fstream &file) {
 	vector<string> campos;
-	string primeraLinea;
-	if(file.good()) getline(file,primeraLinea);
+	string linea;
+	if(file.good()) getline(file,linea);
 	size_t posComa = 0;
 	while (posComa != string::npos) {
-		posComa = primeraLinea.find(",");
-		string campo = primeraLinea.substr(0,posComa);
-		campos.push_back(campo);
-		primeraLinea.erase(0,posComa+1);
+		posComa = linea.find(",");
+		campos.push_back(linea.substr(0,posComa));
+		linea.erase(0,posComa+1);
 	}
-	campos.push_back(primeraLinea.substr(0));
+	campos.push_back(linea.substr(0));
 	return campos;
 }
 
@@ -113,38 +115,58 @@ void KNN::grabarTrainEnCorrespondiente(string pdDistrict,ptoDistrito instanciaTr
 	string ubicacion = obtenerDireccionTrainPdDistrict(pdDistrict);
 	fstream train(ubicacion.c_str(),ios::app|ios::out);
 	if (train.is_open()){
-		train << instanciaTrain.categoria << instanciaTrain.x << instanciaTrain.y;
+		train << instanciaTrain.categoria << "," << instanciaTrain.x << "," << instanciaTrain.y << endl;
 	}
 	train.close();
 }
 
 void KNN::evaluar(string testFileName, string resultKNNFileName) {
 	fstream test(testFileName.c_str(),ios::in);
-	generarNombresDeCamposResultado(resultKNNFileName);
+	vector<string> categoriasOrdenadas = setterData.getCategoryNames();
+	generarNombresDeCamposResultado(resultKNNFileName,categoriasOrdenadas);
 	if (test.is_open()){
-		vector<string> nombresDeCampos = obtenerCamposDeLinea(test);
+		vector<string> nombresDeCampos = obtenerCamposDeLineaTest(test);
 		int posId = obtenerPosicionDeCampo(nombresDeCampos,"Id");
 		int posPdDistrict = obtenerPosicionDeCampo(nombresDeCampos,"PdDistrict");
 		int posX = obtenerPosicionDeCampo(nombresDeCampos,"X");
 		int posY = obtenerPosicionDeCampo(nombresDeCampos,"Y");
 		while (test.good()) {
-			vector<string> datos = obtenerCamposDeLinea(test);
+			vector<string> datos = obtenerCamposDeLineaTest(test);
 			string id = datos[posId];
 			string pdDistrict = datos[posPdDistrict];
 			float xtest = strtof(datos[posX].c_str(),NULL);
 			float ytest = strtof(datos[posY].c_str(),NULL);
 			//Creo vector de frecuencias en 0 para el caso de coordenadas invalidas
-			vector<int> frecuenciasCategoria(39,0);
+			vector<int> frecuenciasCategoria(categoriasOrdenadas.size(),0);
 			if ((xtest != X_INVALID) && (ytest != Y_INVALID)){
+				cout << "coordenadas validas" << endl;
 				vector<distVecino> vecinos = buscarVecinos(xtest,ytest,pdDistrict);
-				frecuenciasCategoria = contarCategoria(vecinos);
+				cout << "encontro vecinos" << endl;
+				frecuenciasCategoria = contarCategoria(vecinos, categoriasOrdenadas);
 			}
+			cout << frecuenciasCategoria[0] << " " << frecuenciasCategoria[38] << endl;
 			grabarResultado(resultKNNFileName,id,frecuenciasCategoria);
+			cout << "resultado grabado" << endl;
 		}
+		cout << "end while" << endl;
 	}
 	test.close();
 
 	cout << "KNN Terminado" << endl;
+}
+
+vector<string> KNN::obtenerCamposDeLineaTest(fstream &file) {
+	vector<string> campos;
+	string linea;
+	if(file.good()) getline(file,linea);
+	size_t posComa = 0;
+	while (posComa != string::npos) {
+		posComa = linea.find(",");
+		campos.push_back(linea.substr(0,posComa));
+		linea.erase(0,posComa+1);
+	}
+	campos.push_back(linea.substr(0,linea.find("\r")));
+	return campos;
 }
 
 vector<KNN::distVecino> KNN::buscarVecinos(float x, float y, string pdDistrict) {
@@ -154,8 +176,7 @@ vector<KNN::distVecino> KNN::buscarVecinos(float x, float y, string pdDistrict) 
 	fstream trainActual(direccionTrainActual.c_str(),ios::in);
 	if (trainActual.is_open()){
 		while (trainActual.good()){
-			ptoDistrito instanciaTrainActual;
-			trainActual >> instanciaTrainActual.categoria >> instanciaTrainActual.x >> instanciaTrainActual.y;
+			ptoDistrito instanciaTrainActual = obtenerInstanciaTrainActual(trainActual);
 			vecinoTrain.categoria = instanciaTrainActual.categoria;
 			vecinoTrain.distancia = calcularDistancia(x,instanciaTrainActual.x,y,instanciaTrainActual.y);
 			distVecino vecino;
@@ -173,6 +194,24 @@ vector<KNN::distVecino> KNN::buscarVecinos(float x, float y, string pdDistrict) 
 	}
 	trainActual.close();
 	return vecinos;
+}
+
+KNN::ptoDistrito KNN::obtenerInstanciaTrainActual(fstream &trainActual) {
+	ptoDistrito instancia;
+	if(trainActual.good()){
+		string linea;
+		getline(trainActual,linea);
+		size_t posComa = 0;
+		posComa = linea.find(",");
+		instancia.categoria = atoi(linea.substr(0,posComa).c_str());
+		linea.erase(0,posComa+1);
+		posComa = linea.find(",");
+		instancia.x = strtof(linea.substr(0,posComa).c_str(),NULL);
+		linea.erase(0,posComa+1);
+		posComa = linea.find(",");
+		instancia.y = strtof(linea.substr(0,posComa).c_str(),NULL);
+	}
+	return instancia;
 }
 
 string KNN::obtenerDireccionTrainPdDistrict(string pdDistrict) {
@@ -197,20 +236,20 @@ int KNN::buscarPosicionDelMayor(vector<distVecino> vecinos) {
 	return posMayor;
 }
 
-vector<int> KNN::contarCategoria(vector<distVecino> vecinos) {
-	vector<int> frecCat(39, 0);
+vector<int> KNN::contarCategoria(vector<distVecino> vecinos, vector<string> &categorias) {
+	vector<int> frecCat(categorias.size(), 0);
 	int i;
 	distVecino vecino;
 	for (i = 0 ; i < (int)vecinos.size(); i++){
 		vecino = vecinos[i];
-		frecCat[obtenerIndiceOrdenadoCategoria(vecino.categoria)] += 1;
+		int indice = obtenerIndiceOrdenadoCategoria(vecino.categoria,categorias);
+		frecCat[indice] += 1;
 	}
 	return frecCat;
 }
 
-int KNN::obtenerIndiceOrdenadoCategoria(int numCategoria) {
+int KNN::obtenerIndiceOrdenadoCategoria(int numCategoria, vector<string> &categorias) {
 	int pos = 0;
-	vector<string> categorias = setterData.getCategoryNames();
 	string categoria = setterData.getCategoryName(numCategoria);
 	for (int i = 0; i < (int)categorias.size(); i++) {
 		if(categorias[i] == categoria){
@@ -220,10 +259,9 @@ int KNN::obtenerIndiceOrdenadoCategoria(int numCategoria) {
 	return pos;
 }
 
-void KNN::generarNombresDeCamposResultado(string resultKNNFileName) {
+void KNN::generarNombresDeCamposResultado(string resultKNNFileName, vector<string> &categorias) {
 	fstream resultado(resultKNNFileName.c_str(),ios::out|ios::trunc);
 	string linea = "Id,";
-	vector<string> categorias = setterData.getCategoryNames();
 	int tamanio = (int) categorias.size();
 	for (int i = 0; i < tamanio; i++){
 		linea += categorias[i];
