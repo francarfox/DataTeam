@@ -15,8 +15,7 @@ using namespace std;
 #include <fstream>
 #include "SetterData.h"
 
-#define X_INVALID -120.5
-#define Y_INVALID 90.0
+
 
 class KNN {
 
@@ -43,19 +42,21 @@ private:
 	void crearArchivosParaUsoInterno();
 
 	void entrenar(string trainFileName);
-	vector<string> obtenerCamposDeLinea(fstream &file);
+	vector<string> obtenerCamposDeLineaTrain(fstream &file);
 	int obtenerPosicionDeCampo (vector<string> &nombresDeCampos, string campoABuscar);
 	void grabarTrainEnCorrespondiente(string pdDistrict,ptoDistrito instanciaTrain);
 
 	void evaluar(string testFileName, string resultFileName);
+	vector<string> obtenerCamposDeLineaTest(fstream &file);
 	vector<distVecino> buscarVecinos(float x, float y, string pdDistrict);
+	ptoDistrito obtenerInstanciaTrainActual(fstream &train);
 	string obtenerDireccionTrainPdDistrict(string pdDistrict);
 	float calcularDistancia(float xtest, float xtrain, float ytest, float ytrain);
 	int buscarPosicionDelMayor(vector<distVecino> vecinos);
-	vector<int> contarCategoria(vector<distVecino> vecinos);
-	int obtenerIndiceOrdenadoCategoria(int numCategoria);
+	vector<int> contarCategoria(vector<distVecino> vecinos, vector<string> &categorias);
+	int obtenerIndiceOrdenadoCategoria(int numCategoria, vector<string> &categorias);
 
-	void generarNombresDeCamposResultado(string resultKNNFileName);
+	void generarNombresDeCamposResultado(string resultKNNFileName, vector<string> &categorias);
 	void grabarResultado(string resultFileName, string id, vector<int> &frecuenciasCategoria);
 
 };
