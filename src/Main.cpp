@@ -9,6 +9,7 @@
 #include <iostream>
 #include "FileManager.h"
 #include "NaiveBayes.h"
+#include "KNN.h"
 
 using namespace std;
 
@@ -29,9 +30,12 @@ int main() {
 	fileManager.process();
 
 	//	Pasarle el archivo con los datos de los registros como numericos
-	NaiveBayes naiveBayes = NaiveBayes(predictFieldName, fileManager.getSetterData());
-	naiveBayes.train(totalTrainRecords, trainNewFileName);
-	naiveBayes.test(totalTestRecords, testFileName, submissionFileName);
+//	NaiveBayes naiveBayes = NaiveBayes(predictFieldName, fileManager.getSetterData());
+//	naiveBayes.train(totalTrainRecords, trainNewFileName);
+//	naiveBayes.test(totalTestRecords, testFileName, submissionFileName);
+
+	KNN knn = KNN(50, fileManager.getSetterData());
+	knn.aplicarKNN(trainNewFileName,testFileName,submissionFileName);
 
 	cout << "Finish run app" << endl;
 	return 0;

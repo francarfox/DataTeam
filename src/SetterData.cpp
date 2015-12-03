@@ -100,6 +100,6 @@ void SetterData::orderCategories() {
 }
 
 string SetterData::getPdDistrictName(int pdDistrictIndex) {
-	cout << "dataConvert[PdDistrict][" << pdDistrictIndex << "]=" << dataConvert["PdDistrict"][pdDistrictIndex] << endl;
+	//cout << "dataConvert[PdDistrict][" << pdDistrictIndex << "]=" << dataConvert["PdDistrict"][pdDistrictIndex] << endl;
 	return dataConvert["PdDistrict"][pdDistrictIndex];
 }
