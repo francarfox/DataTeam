@@ -40,8 +40,8 @@ private:
 	void processCalculateVariance(ifstream &trainFile);
 	void processDataString(vector<string> &dataRecord, string dataString, int currentFieldIndex, string &currentCategoryName);
 	int getPredictFieldIndex();
-	void addForCalculateMean(vector<string> dataRecord, string categoryName);
-	void addForCalculateVariance(vector<string> dataRecord, string categoryName);
+	void addForCalculateMean(vector<string> &dataRecord, string categoryName);
+	void addForCalculateVariance(vector<string> &dataRecord, string categoryName);
 	void calculateMean();
 	void calculateVariance();
 	void verifyDataCategory(int category);

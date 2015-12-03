@@ -46,6 +46,12 @@ string SetterData::getString(int number) {
 	return stream.str();
 }
 
+string SetterData::getDataString(double number) {
+	stringstream stream;
+	stream << number;
+	return stream.str();
+}
+
 int SetterData::getInt(string numberString) {
 	return atoi( numberString.c_str() );
 }

@@ -35,9 +35,9 @@ private:
 	void addDataNumeric(vector<double> &dataRecord, string dataString, int currentFieldIndex);
 	void writeFieldNames(ofstream &submissionFile);
 	void writeSubmissionFile(vector<double> &dataRecord, ofstream &submissionFile);
-	void writeDataRecord(vector<string> dataRecord, ofstream &submissionFile);
+	void writeDataRecord(vector<string> &dataRecord, ofstream &submissionFile);
 	void generateFieldNamesWithoutIrrelevants();
-	vector<double> calculateProbability(vector<double> dataRecord);
+	vector<double> calculateProbability(vector<double> &dataRecord);
 	double calculateProbabilityCategory(int category);
 	double calculateProbabilityRespectTo(int category, int field, double data);
 };

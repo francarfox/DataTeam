@@ -210,7 +210,7 @@ int NaiveBayes::getPredictFieldIndex() {
 	return -1;
 }
 
-void NaiveBayes::addForCalculateMean(vector<string> dataRecord, string categoryName) {
+void NaiveBayes::addForCalculateMean(vector<string> &dataRecord, string categoryName) {
 	int category = setterData.getInt(categoryName);	// Previamente trainFile con datos numericos
 
 	for(size_t i=0; i < dataRecord.size(); i++) {
@@ -224,7 +224,7 @@ void NaiveBayes::addForCalculateMean(vector<string> dataRecord, string categoryN
 	totalCategoryRecords[category]++;
 }
 
-void NaiveBayes::addForCalculateVariance(vector<string> dataRecord, string categoryName) {
+void NaiveBayes::addForCalculateVariance(vector<string> &dataRecord, string categoryName) {
 	int category = setterData.getInt(categoryName);	// Previamente trainFile con datos numericos
 
 	for(size_t i=0; i < dataRecord.size(); i++) {

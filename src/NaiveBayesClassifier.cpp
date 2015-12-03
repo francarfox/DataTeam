@@ -124,13 +124,6 @@ void NaiveBayesClassifier::processClassification(ifstream &testFile, ofstream &s
 
 void NaiveBayesClassifier::addDataNumeric(vector<double> &dataRecord, string dataString, int currentFieldIndex) {
 	string currentFieldName = testFieldNames[currentFieldIndex];
-	cout << "dataString " << dataString << endl;
-
-	// Debug
-	for(size_t i=0; i < dataRecord.size(); i++) {
-		cout << " =) " << dataRecord[i];
-	}
-	cout << endl;
 
 	// Me fijo si es un dato perteneciente a un campo irrelevante
 	for(size_t i=0; i < irrelevantFieldNames.size(); i++) {
@@ -175,14 +168,14 @@ void NaiveBayesClassifier::writeSubmissionFile(vector<double> &dataRecord, ofstr
 
 	for(size_t i=0; i < numericDataRecord.size(); i++) {
 		double dataNumeric = numericDataRecord[i];
-		string dataString = setterData.getString(dataNumeric);
+		string dataString = setterData.getDataString(dataNumeric);
 		stringDataRecord.push_back(dataString);
 	}
 
 	writeDataRecord(stringDataRecord, submissionFile);
 }
 
-void NaiveBayesClassifier::writeDataRecord(vector<string> dataRecord, ofstream &submissionFile) {
+void NaiveBayesClassifier::writeDataRecord(vector<string> &dataRecord, ofstream &submissionFile) {
 	string line;
 
 	for(size_t i=0; i < dataRecord.size(); i++) {
@@ -225,7 +218,7 @@ void NaiveBayesClassifier::generateFieldNamesWithoutIrrelevants() {
 
 // Calculos
 
-vector<double> NaiveBayesClassifier::calculateProbability(vector<double> dataRecord) {
+vector<double> NaiveBayesClassifier::calculateProbability(vector<double> &dataRecord) {
 	/*
 	 * 						P(WARRANTS).p(Hour|WARRANTS).p(DayOfWeek|WARRANTS)...
 	 * class(WARRANTS) = __________________________________________________________
@@ -234,33 +227,19 @@ vector<double> NaiveBayesClassifier::calculateProbability(vector<double> dataRec
 	 */
 
 	vector<double> probCategoryVector;	// Guardo numeradores para luego dividir por evidence
-	long evidence = 0;	// Inicia con el neutro de la multiplicacion
-
-	long total = 0;
-	for(size_t i=0; i < bayes->totalCategoryRecords.size(); i++) {
-		cout << "categoryName " << i << " ->" << setterData.getCategoryName(i) << endl;
-		total += bayes->totalCategoryRecords[i];
-	}
-	cout << "total " << total << endl;
+	double evidence = 0;	// Inicia con el neutro de la multiplicacion
 
 	// Calculo probabilidades por cada categoria
 	for(size_t i=0; i < bayes->meanDistribution.size(); i++) {
 		double probCategory = calculateProbabilityCategory(i);
-		cout << "probCategory beg " << probCategory << endl;
-		cout << "dataRecord.size()" << dataRecord.size() << endl;
 
 		// Por cada campo del registro de datos
-		for(size_t j=0; j < dataRecord.size(); j++) {
-			probCategory *= calculateProbabilityRespectTo(i, j, dataRecord[j]);
+		for(size_t j=1; j < dataRecord.size(); j++) {
+			probCategory *= calculateProbabilityRespectTo(i, j-1, dataRecord[j]);
 		}
 
-		cout << "probCategory end " << probCategory << endl;
 		probCategoryVector.push_back(probCategory);
 		evidence += probCategory;
-	}
-
-	for(size_t i=0; i < probCategoryVector.size(); i++) {
-		probCategoryVector[i] /= evidence;
 	}
 
 	return probCategoryVector;
@@ -268,22 +247,21 @@ vector<double> NaiveBayesClassifier::calculateProbability(vector<double> dataRec
 
 double NaiveBayesClassifier::calculateProbabilityCategory(int category) {
 	// P(WARRANTS)
-	int currentCategoryRecord = bayes->totalCategoryRecords[category];
-	cout << "\ncurrentCategoryRecord " << currentCategoryRecord << endl;
-	return (double)(currentCategoryRecord / bayes->totalTrainRecords);
+	double currentCategoryRecord = bayes->totalCategoryRecords[category];
+	return (currentCategoryRecord / bayes->totalTrainRecords);
 }
 
 double NaiveBayesClassifier::calculateProbabilityRespectTo(int category, int field, double data) {
 /*
- * 										  -(data - variance)2
- * p(Hour|WARRANTS) = _______1_______ exp( __________________ )
- *					  sqrt(2PI.mean2)	 		2.mean2
+ * 										        -(data - mean)2
+ * p(Hour|WARRANTS) = __________1________ exp( __________________ )
+ *					   sqrt(2PI.variance)	 	   2.variance
  *
  */
 	double mean = bayes->meanDistribution[category][field];
 	double variance = bayes->varianceDistribution[category][field];
 
-	double base = (1 / sqrt(2 * M_PI * pow(mean, 2)));
-	double exponent = -pow(data - variance, 2) / (2 * pow(mean, 2));
+	double base = 1.0 / sqrt(2 * M_PI * variance);
+	double exponent = -pow(data - mean, 2) / (2 * variance);
 	return pow(base, exponent);
 }

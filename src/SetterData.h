@@ -26,6 +26,7 @@ public:
 	virtual ~SetterData();
 	string getDataNumeric(string dataString, string currentFieldName);
 	string getString(int number);
+	string getDataString(double number);
 	int getInt(string numberString);
 	double getDouble(string numberString);
 

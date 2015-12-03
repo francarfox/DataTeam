@@ -34,7 +34,7 @@ private:
 	void generateOutFile(ifstream &inFile, ofstream &outFile);
 	void addDataNumeric(vector<string> &dataRecord, string dataString, int currentFieldIndex);
 	void writeFieldNames(ofstream &outFile);
-	void writeDataRecord(vector<string> dataRecord, ofstream &outFile);
+	void writeDataRecord(vector<string> &dataRecord, ofstream &outFile);
 };
 
 #endif /* FILEMANAGER_H_ */
