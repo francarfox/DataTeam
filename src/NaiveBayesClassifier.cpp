@@ -187,7 +187,6 @@ void NaiveBayesClassifier::writeDataRecord(vector<string> &dataRecord, ofstream 
 	}
 
 	line += "\n";
-	cout << line << endl;
 
 	submissionFile << line;
 }
@@ -240,6 +239,10 @@ vector<double> NaiveBayesClassifier::calculateProbability(vector<double> &dataRe
 
 		probCategoryVector.push_back(probCategory);
 		evidence += probCategory;
+	}
+
+	for(size_t i=0; i < probCategoryVector.size(); i++) {
+		probCategoryVector[i] /= evidence;
 	}
 
 	return probCategoryVector;
