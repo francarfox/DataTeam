@@ -18,6 +18,7 @@ class NaiveBayes {
 
 	string predictFieldName;
 	vector<string> fieldNames;
+	vector<string> irrelevantFieldNames;
 
 public:
 	int totalTrainRecords;

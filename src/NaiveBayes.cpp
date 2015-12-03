@@ -14,8 +14,10 @@ using namespace std;
 
 NaiveBayes::NaiveBayes(string predictFieldName, SetterData setterData) {
 	this->predictFieldName = predictFieldName;
-
 	this->setterData = setterData;
+
+//	this->irrelevantFieldNames.push_back("X");
+//	this->irrelevantFieldNames.push_back("Y");
 }
 
 NaiveBayes::~NaiveBayes() { }
@@ -96,6 +98,11 @@ void NaiveBayes::getFieldNamesFromFirstLine(ifstream &trainFile) {
 
 	while (trainFile.good() && currentChar != '\n') {
 		currentChar = (char)trainFile.get();
+
+		// Contemplo el ultimo campo que no termina en ,
+		if (currentChar == '\n') {
+			fieldNames.push_back(fieldName);
+		}
 
 		if (currentChar == ',') {
 			fieldNames.push_back(fieldName);
@@ -195,6 +202,17 @@ void NaiveBayes::processDataString(vector<string> &dataRecord, string dataString
 	if (currentFieldIndex == getPredictFieldIndex()) {
 		currentCategoryName = dataString;
 	} else {
+
+		// Me fijo si es una dato irrelevante (X, Y)
+		for(size_t i=0; i < irrelevantFieldNames.size(); i++) {
+			string irrelevantFieldName = irrelevantFieldNames[i];
+			string currentFieldName = fieldNames[currentFieldIndex];
+
+			if (currentFieldName == irrelevantFieldName) {
+				return;
+			}
+		}
+
 		dataRecord.push_back(dataString.c_str());
 	}
 }
