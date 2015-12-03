@@ -13,12 +13,38 @@
 KNN::KNN(int valorK, SetterData setterDataTrain) {
 	k = valorK;
 	setterData = setterDataTrain;
+	crearArchivosParaUsoInterno();
 }
 
-KNN::~KNN() { }
+KNN::~KNN() {}
+
+void KNN::crearArchivosParaUsoInterno(){
+	//Me aseguro que los archivos se crean en blanco
+	fstream train("../DataTeam/files/trainNORTHERN.txt",ios::out|ios::trunc);
+	train.close();
+	train.open("../DataTeam/files/trainPARK.txt",ios::out|ios::trunc);
+	train.close();
+	train.open("../DataTeam/files/trainINGLESIDE.txt",ios::out|ios::trunc);
+	train.close();
+	train.open("../DataTeam/files/trainBAYVIEW.txt",ios::out|ios::trunc);
+	train.close();
+	train.open("../DataTeam/files/trainRICHMOND.txt",ios::out|ios::trunc);
+	train.close();
+	train.open("../DataTeam/files/trainCENTRAL.txt",ios::out|ios::trunc);
+	train.close();
+	train.open("../DataTeam/files/trainTARAVAL.txt",ios::out|ios::trunc);
+	train.close();
+	train.open("../DataTeam/files/trainTENDERLOIN.txt",ios::out|ios::trunc);
+	train.close();
+	train.open("../DataTeam/files/trainMISSION.txt",ios::out|ios::trunc);
+	train.close();
+	train.open("../DataTeam/files/trainSOUTHERN.txt",ios::out|ios::trunc);
+	train.close();
+}
 
 void KNN::aplicarKNN(string trainFileName, string testFileName, string resultKNNFileName){
 	cout << endl << "Inicio KNN" << endl;
+
 
 	entrenar(trainFileName);
 
@@ -52,9 +78,9 @@ void KNN::entrenar(string trainFileName) {
 				string pdDistrict = setterData.getPdDistrictName(numPdDistrict);
 				grabarTrainEnCorrespondiente(pdDistrict,instanciaTrainDist);
 			}
+			train.peek();//Archivo train tiene una ultima linea en blanco
 		}
 	}
-	cout << "fin grabar archivos" << endl;
 	train.close();
 }
 
@@ -195,7 +221,7 @@ int KNN::obtenerIndiceOrdenadoCategoria(int numCategoria) {
 }
 
 void KNN::generarNombresDeCamposResultado(string resultKNNFileName) {
-	fstream resultado(resultKNNFileName.c_str(),ios::out);
+	fstream resultado(resultKNNFileName.c_str(),ios::out|ios::trunc);
 	string linea = "Id,";
 	vector<string> categorias = setterData.getCategoryNames();
 	int tamanio = (int) categorias.size();
@@ -212,7 +238,7 @@ void KNN::generarNombresDeCamposResultado(string resultKNNFileName) {
 }
 
 void KNN::grabarResultado(string resultKNNFileName, string id, vector<int> &frecuenciasCategoria){
-	fstream resultado(resultKNNFileName.c_str(),ios::app);
+	fstream resultado(resultKNNFileName.c_str(),ios::app|ios::out);
 	if (resultado.is_open()) {
 		resultado << endl;
 		int tamanio = (int) frecuenciasCategoria.size();

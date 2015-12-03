@@ -40,6 +40,8 @@ public:
 
 private:
 
+	void crearArchivosParaUsoInterno();
+
 	void entrenar(string trainFileName);
 	vector<string> obtenerCamposDeLinea(fstream &file);
 	int obtenerPosicionDeCampo (vector<string> &nombresDeCampos, string campoABuscar);
