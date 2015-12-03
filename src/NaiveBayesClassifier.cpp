@@ -19,6 +19,11 @@ NaiveBayesClassifier::NaiveBayesClassifier(NaiveBayes *bayes) {
 	this->irrelevantFieldNames.push_back("Descript");
 	this->irrelevantFieldNames.push_back("Resolution");
 	this->irrelevantFieldNames.push_back("Address");
+
+	for(size_t i=0; i < bayes->irrelevantFieldNames.size(); i++) {
+		string irrelevantFieldName = bayes->irrelevantFieldNames[i];
+		this->irrelevantFieldNames.push_back(irrelevantFieldName);
+	}
 }
 
 NaiveBayesClassifier::~NaiveBayesClassifier() {
