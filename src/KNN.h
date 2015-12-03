@@ -45,18 +45,17 @@ private:
 	void crearArchivosParaUsoInterno();
 
 	void entrenar(string trainFileName);
-	vector<string> obtenerCamposDeLineaTrain(fstream &file);
+	vector<string> obtenerCamposDeLinea(fstream &file);
 	int obtenerPosicionDeCampo (vector<string> &nombresDeCampos, string campoABuscar);
 	void grabarTrainEnCorrespondiente(string pdDistrict,ptoDistrito instanciaTrain);
 
 	void evaluar(string testFileName, string resultFileName);
-	vector<string> obtenerCamposDeLineaTest(fstream &file);
 	vector<distVecino> buscarVecinos(float x, float y, string pdDistrict);
 	ptoDistrito obtenerInstanciaTrainActual(fstream &train);
 	string obtenerDireccionTrainPdDistrict(string pdDistrict);
 	float calcularDistancia(float xtest, float xtrain, float ytest, float ytrain);
-	int buscarPosicionDelMayor(vector<distVecino> vecinos);
-	vector<int> contarCategoria(vector<distVecino> vecinos, vector<string> &categorias);
+	int buscarPosicionDelMayor(vector<distVecino> &vecinos);
+	vector<int> contarCategoria(vector<distVecino> &vecinos, vector<string> &categorias);
 	int obtenerIndiceOrdenadoCategoria(int numCategoria, vector<string> &categorias);
 
 	void generarNombresDeCamposResultado(string resultKNNFileName, vector<string> &categorias);
