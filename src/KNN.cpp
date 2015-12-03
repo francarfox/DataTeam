@@ -141,14 +141,12 @@ void KNN::evaluar(string testFileName, string resultKNNFileName) {
 			if ((xtest != X_INVALID) && (ytest != Y_INVALID)){
 				cout << "coordenadas validas" << endl;
 				vector<distVecino> vecinos = buscarVecinos(xtest,ytest,pdDistrict);
-				cout << "encontro vecinos" << endl;
+				cout << "Vecinos Encontrados" << endl;
 				frecuenciasCategoria = contarCategoria(vecinos, categoriasOrdenadas);
 			}
-			cout << frecuenciasCategoria[0] << " " << frecuenciasCategoria[38] << endl;
 			grabarResultado(resultKNNFileName,id,frecuenciasCategoria);
-			cout << "resultado grabado" << endl;
+			cout << "Resultado Grabado" << endl;
 		}
-		cout << "end while" << endl;
 	}
 	test.close();
 
@@ -279,6 +277,7 @@ void KNN::grabarResultado(string resultKNNFileName, string id, vector<int> &frec
 	fstream resultado(resultKNNFileName.c_str(),ios::app|ios::out);
 	if (resultado.is_open()) {
 		resultado << endl;
+		resultado << id << ",";
 		int tamanio = (int) frecuenciasCategoria.size();
 		for (int i = 0; i < tamanio; i++){
 			float probabilidad = (float) frecuenciasCategoria[i] / (float) k;
