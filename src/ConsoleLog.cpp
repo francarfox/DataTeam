@@ -6,12 +6,15 @@
  */
 
 #include "ConsoleLog.h"
+#include <iomanip>
+using namespace std;
 
 void log(string text) {
 
 }
 
 void logPercent(string processName, int current, int total) {
-	float percent = 100 * current / total;
-	cout << "\r" << processName << ": " << percent << "%   ";
+	float percent = 100 * (float)current / (float)total;
+	cout << "\r" << processName << ": ";
+	cout << fixed << percent << setprecision(2) << "%   ";
 }

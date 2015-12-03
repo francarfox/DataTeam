@@ -9,12 +9,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include "ConsoleLog.h"
 
 #define X_INVALID -120.5
 #define Y_INVALID 90.0
 
-KNN::KNN(int valorK, SetterData setterDataTrain) {
+KNN::KNN(int valorK, int totalTrainRecords, int totalTestRecords, SetterData setterDataTrain) {
 	k = valorK;
+	this->totalTrainRecords = totalTrainRecords;
+	this->totalTestRecords = totalTestRecords;
 	setterData = setterDataTrain;
 	crearArchivosParaUsoInterno();
 }
@@ -69,6 +72,8 @@ void KNN::entrenar(string trainFileName) {
 		int posPdDistrict = obtenerPosicionDeCampo(nombresDeCampos,"PdDistrict");
 		int posX = obtenerPosicionDeCampo(nombresDeCampos,"X");
 		int posY = obtenerPosicionDeCampo(nombresDeCampos,"Y");
+		int currentProcessRecords = 0;
+
 		while (train.good()) {
 			vector<string> datos = obtenerCamposDeLineaTrain(train);
 			ptoDistrito instanciaTrainDist;
@@ -82,6 +87,9 @@ void KNN::entrenar(string trainFileName) {
 				grabarTrainEnCorrespondiente(pdDistrict,instanciaTrainDist);
 			}
 			train.peek();//Archivo train tiene una ultima linea en blanco
+
+			// Muestro porcetaje de proceso
+			logPercent("Entrenando KNN", ++currentProcessRecords, totalTrainRecords);
 		}
 	}
 	train.close();
@@ -130,6 +138,8 @@ void KNN::evaluar(string testFileName, string resultKNNFileName) {
 		int posPdDistrict = obtenerPosicionDeCampo(nombresDeCampos,"PdDistrict");
 		int posX = obtenerPosicionDeCampo(nombresDeCampos,"X");
 		int posY = obtenerPosicionDeCampo(nombresDeCampos,"Y");
+		int currentProcessRecords = 0;
+
 		while (test.good()) {
 			vector<string> datos = obtenerCamposDeLineaTest(test);
 			string id = datos[posId];
@@ -146,6 +156,10 @@ void KNN::evaluar(string testFileName, string resultKNNFileName) {
 			}
 			grabarResultado(resultKNNFileName,id,frecuenciasCategoria);
 			cout << "Resultado Grabado" << endl;
+
+			// Muestro porcetaje de proceso
+			cout << "currentProcessRecords: " << currentProcessRecords << endl;
+			logPercent("Entrenando KNN", ++currentProcessRecords, totalTestRecords);
 		}
 	}
 	test.close();

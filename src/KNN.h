@@ -31,8 +31,11 @@ typedef struct distVecino {
 	int categoria;
 }dV;
 
+int totalTrainRecords;
+int totalTestRecords;
+
 public:
-	KNN(int valorK, SetterData setterData);
+	KNN(int valorK, int totalTrainRecords, int totalTestRecords, SetterData setterData);
 	virtual ~KNN();
 
 	void aplicarKNN(string trainFileName, string testFileName, string resultFileName);

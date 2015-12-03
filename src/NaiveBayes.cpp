@@ -81,7 +81,7 @@ void NaiveBayes::doGaussianDistribution(ifstream &trainFile) {
 	ignoreFieldNamesFromFirstLine(trainFile);
 	processCalculateVariance(trainFile);
 
-	// Debug
+	// Show meanDistribution and vaarianceDistribution matrix
 	debug();
 
 	// Elimino el category de los nombres de los campos para que concuerde con las matrices
